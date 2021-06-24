@@ -9,7 +9,7 @@ export class PaginationCollection<Entity> {
 
     constructor(data: { items: any[]; total: number; lastPage: number; perPage: number; currentPage: number }) {
         if (!(this.items instanceof EntityCollection)) {
-            this.items = new EntityCollection<Entity>().collect(this.items);
+            this.items = new EntityCollection<Entity>().collect(data.items);
         }
         this.total = data.total;
         this.lastPage = data.lastPage;
