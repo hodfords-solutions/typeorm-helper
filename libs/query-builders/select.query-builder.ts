@@ -17,19 +17,19 @@ declare module 'typeorm/query-builder/SelectQueryBuilder' {
     }
 }
 SelectQueryBuilder.prototype.getManyOrigin = SelectQueryBuilder.prototype.getMany;
-SelectQueryBuilder.prototype.getMany = async function() {
+SelectQueryBuilder.prototype.getMany = async function () {
     const results = await this.getManyOrigin();
     return new EntityCollection().collect(results);
 };
 
 SelectQueryBuilder.prototype.getRawManyOrigin = SelectQueryBuilder.prototype.getRawMany;
-SelectQueryBuilder.prototype.getRawMany = async function() {
+SelectQueryBuilder.prototype.getRawMany = async function () {
     const results = await this.getRawManyOrigin();
     return new EntityCollection().collect(results);
 };
 
 SelectQueryBuilder.prototype.getManyAndCountOrigin = SelectQueryBuilder.prototype.getManyAndCount;
-SelectQueryBuilder.prototype.getManyAndCount = async function() {
+SelectQueryBuilder.prototype.getManyAndCount = async function () {
     const [results, count] = await this.getManyAndCountOrigin();
     return [new EntityCollection().collect(results), count] as any;
 };

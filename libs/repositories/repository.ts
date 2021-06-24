@@ -1,6 +1,5 @@
 import { FindConditions, FindManyOptions, ObjectLiteral } from 'typeorm';
 import { EntityCollection } from '../collections/entity.collection';
-import { Repository } from 'typeorm/repository/Repository';
 
 declare module 'typeorm/repository/Repository' {
     interface Repository<Entity extends ObjectLiteral> {

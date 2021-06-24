@@ -1,17 +1,10 @@
-import {
-    FindConditions,
-    FindManyOptions,
-    getConnection,
-    ObjectLiteral,
-    Repository as AbstractRepository,
-    SelectQueryBuilder
-} from 'typeorm';
+import { FindConditions, FindManyOptions, getConnection, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { FindOneOptions } from 'typeorm/browser';
 import { ObjectType } from 'typeorm/common/ObjectType';
 import { PaginationCollection } from '../collections/pagination.collection';
 
-export abstract class BaseRepository<Entity extends ObjectLiteral> extends AbstractRepository<Entity> {
+export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
     static make<T>(this: ObjectType<T>): T {
         return getConnection().getCustomRepository(this) as any;
     }
@@ -26,7 +19,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Abstr
     }
 
     async pagination(
-        options: FindManyOptions<Entity> | FindConditions<Entity> | any,
+        options: FindManyOptions<Entity> | FindConditions<Entity> | any | SelectQueryBuilder<Entity>,
         paginationParams: { page?: number; perPage?: number }
     ) {
         let page = paginationParams.page || 1;
@@ -35,6 +28,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Abstr
         if (options instanceof SelectQueryBuilder) {
             return this.paginateQueryBuilder(options, { page: page, limit: limit });
         }
+
         if (!options) {
             options = {};
         }
@@ -51,13 +45,13 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Abstr
             skip: (page - 1) * limit
         });
 
-        return {
+        return new PaginationCollection<Entity>({
             items: items,
             total: count,
             lastPage: Math.ceil(count / limit),
             perPage: limit,
             currentPage: page
-        };
+        });
     }
 
     private async paginateQueryBuilder(query: SelectQueryBuilder<Entity>, options) {
