@@ -1,18 +1,22 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Category } from './Category';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from './User';
+import { BaseEntity } from '../../libs';
 
 @Entity()
-export class Post {
+export class Post extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     title: string;
 
-    @Column('text')
-    text: string;
+    // @ManyToMany((type) => Category, (category) => category. )
+    // @JoinTable()
+    // categories: Category[];
 
-    @ManyToMany((type) => Category)
-    @JoinTable()
-    categories: Category[];
+    @ManyToOne(() => User, (user) => user.posts)
+    user: User;
+
+    @Column({ nullable: true })
+    userId: string;
 }

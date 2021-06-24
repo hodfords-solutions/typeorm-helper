@@ -5,11 +5,11 @@
   "port": 5432,
   "username": "test",
   "password": "test",
-  "database": "test-helper",
+  "database": "test-database",
   "synchronize": true,
   "logging": false,
   "entities": [
-    "src/entity/*.js"
+    "src/entity/*.ts"
   ],
   "subscribers": [
     "src/subscriber/*.js"
