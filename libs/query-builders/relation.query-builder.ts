@@ -21,7 +21,7 @@ export class RelationQueryBuilder {
             this.connection = getConnection();
         }
         this.entities = Array.isArray(entityOrEntities) ? entityOrEntities : [entityOrEntities];
-        let entity = this.connection.getMetadata(entityOrEntities[0].constructor);
+        let entity = this.connection.getMetadata(this.entities[0].constructor);
         this.relation = entity.relations.find((relation) => relation.propertyName === relationName);
     }
 
@@ -120,12 +120,13 @@ export class RelationQueryBuilder {
         queryBuilder.where(
             new Brackets((query) => {
                 for (let column of this.relation.joinColumns) {
-                    query.where(` "${column.referencedColumn.propertyName}" IN (:...values)`, {
-                        values: this.getValues(column.propertyName)
+                    query.where(` "${column.referencedColumn.databaseName}" IN (:...values)`, {
+                        values: this.getValues(column.databaseName)
                     });
                 }
             })
         );
+        console.log(queryBuilder.getQueryAndParameters());
         if (this.customQuery) {
             this.customQuery(queryBuilder);
         }
