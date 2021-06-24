@@ -1,4 +1,4 @@
-import { RelationQueryBuilder } from '../query-builders/relation.query-builder';
+import {loadRelations, RelationParams} from '../helper';
 
 export class EntityCollection<Entity> extends Array<Entity> {
     public collect(entities: Entity[]): EntityCollection<Entity> {
@@ -6,8 +6,8 @@ export class EntityCollection<Entity> extends Array<Entity> {
         return this;
     }
 
-    async loadRelation(relationName: string) {
-        await new RelationQueryBuilder(this, relationName).load();
+    async loadRelation(relationNames: RelationParams) {
+        await loadRelations(this, relationNames);
         return this;
     }
 }

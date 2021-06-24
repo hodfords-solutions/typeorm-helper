@@ -8,6 +8,7 @@
   "database": "test-database",
   "synchronize": true,
   "logging": false,
+  "keepConnectionAlive": true,
   "entities": [
     "src/entity/*.ts"
   ],
