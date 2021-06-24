@@ -1,11 +1,11 @@
-import { uniq } from 'lodash';
-import { Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder } from 'typeorm';
-import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import {uniq} from 'lodash';
+import {Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder} from 'typeorm';
+import {RelationMetadata} from 'typeorm/metadata/RelationMetadata';
 
 export class RelationQueryBuilder {
     public relation: RelationMetadata;
     private connection: Connection;
-    private customQuery: (name: SelectQueryBuilder<any>) => void;
+    private customQuery: (queryBuilder: SelectQueryBuilder<any>) => void;
     public results: any[];
     public entities: any[] = [];
 
@@ -54,7 +54,7 @@ export class RelationQueryBuilder {
         for (let entity of this.entities) {
             entity[this.relationName] = this.results.find((result) => {
                 for (let column of this.relation.joinColumns) {
-                    if (entity[column.propertyName] !== result[column.referencedColumn.propertyName]) {
+                    if (entity[column.databaseName] !== result[column.referencedColumn.databaseName]) {
                         return false;
                     }
                 }
@@ -67,7 +67,7 @@ export class RelationQueryBuilder {
         for (let entity of this.entities) {
             entity[this.relationName] = this.results.filter((result) => {
                 for (let column of this.inverseRelation.joinColumns) {
-                    if (entity[column.propertyName] !== result[column.referencedColumn.propertyName]) {
+                    if (entity[column.referencedColumn.databaseName] !== result[column.databaseName]) {
                         return false;
                     }
                 }
@@ -100,8 +100,8 @@ export class RelationQueryBuilder {
         queryBuilder.where(
             new Brackets((query) => {
                 for (let column of this.inverseRelation.joinColumns) {
-                    query.where(` "${column.propertyName}" IN (:...values)`, {
-                        values: this.getValues(column.referencedColumn.propertyName)
+                    query.where(` "${column.databaseName}" IN (:...values)`, {
+                        values: this.getValues(column.referencedColumn.databaseName)
                     });
                 }
             })
@@ -126,7 +126,6 @@ export class RelationQueryBuilder {
                 }
             })
         );
-        console.log(queryBuilder.getQueryAndParameters());
         if (this.customQuery) {
             this.customQuery(queryBuilder);
         }
