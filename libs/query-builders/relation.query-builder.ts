@@ -1,6 +1,6 @@
-import {uniq} from 'lodash';
-import {Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder} from 'typeorm';
-import {RelationMetadata} from 'typeorm/metadata/RelationMetadata';
+import { uniq } from 'lodash';
+import { Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder } from 'typeorm';
+import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
 export class RelationQueryBuilder {
     public relation: RelationMetadata;
@@ -31,9 +31,9 @@ export class RelationQueryBuilder {
         } else if (this.relation.isOneToMany || this.relation.isOneToOneNotOwner) {
             this.results = await this.queryOneToManyOrOneToOneNotOwner();
         } else if (this.relation.isManyToManyOwner) {
-            throw new TypeError('Plz help us create it when you use loadManyToManyOwner');
+            this.results = await this.queryManyToManyOwner();
         } else {
-            throw new TypeError('Plz help us create it when you use loadManyToManyNotOwner');
+            this.results = await this.queryManyToManyNotOwner();
         }
         this.assignData();
     }
@@ -44,9 +44,9 @@ export class RelationQueryBuilder {
         } else if (this.relation.isOneToMany || this.relation.isOneToOneNotOwner) {
             return this.assignOneToManyOrOneToOneNotOwner();
         } else if (this.relation.isManyToManyOwner) {
-            throw new TypeError('Plz help us create it when you use loadManyToManyOwner');
+            return this.assignOneToManyOrOneToOneNotOwner();
         } else {
-            throw new TypeError('Plz help us create it when you use loadManyToManyNotOwner');
+            return this.assignOneToManyOrOneToOneNotOwner();
         }
     }
 
@@ -126,6 +126,54 @@ export class RelationQueryBuilder {
                 }
             })
         );
+        if (this.customQuery) {
+            this.customQuery(queryBuilder);
+        }
+        return queryBuilder.getMany();
+    }
+
+    queryManyToManyOwner() {
+        const joinAlias = this.relation.junctionEntityMetadata!.tableName;
+        const joinColumnConditions = this.relation.joinColumns.map(joinColumn => {
+            return `${joinAlias}.${joinColumn.propertyName} IN (:...${joinColumn.propertyName})`;
+        });
+        const inverseJoinColumnConditions = this.relation.inverseJoinColumns.map(inverseJoinColumn => {
+            return `${joinAlias}.${inverseJoinColumn.propertyName}=${this.relation.propertyName}.${inverseJoinColumn.referencedColumn!.propertyName}`;
+        });
+        const parameters = this.relation.joinColumns.reduce((parameters, joinColumn) => {
+            parameters[joinColumn.propertyName] = this.entities.map(entity => joinColumn.referencedColumn!.getEntityValue(entity));
+            return parameters;
+        }, {} as ObjectLiteral);
+
+        return this.queryManyToMany(joinColumnConditions, inverseJoinColumnConditions, parameters);
+    }
+
+    queryManyToManyNotOwner() {
+        const joinAlias = this.relation.junctionEntityMetadata!.tableName;
+        const joinColumnConditions = this.inverseRelation!.joinColumns.map(joinColumn => {
+            return `${joinAlias}.${joinColumn.propertyName} = ${this.relation.propertyName}.${joinColumn.referencedColumn!.propertyName}`;
+        });
+        const inverseJoinColumnConditions = this.inverseRelation!.inverseJoinColumns.map(inverseJoinColumn => {
+            return `${joinAlias}.${inverseJoinColumn.propertyName} IN (:...${inverseJoinColumn.propertyName})`;
+        });
+        const parameters = this.inverseRelation!.inverseJoinColumns.reduce((parameters, joinColumn) => {
+            parameters[joinColumn.propertyName] = this.entities.map(entity => joinColumn.referencedColumn!.getEntityValue(entity));
+            return parameters;
+        }, {} as ObjectLiteral);
+
+        return this.queryManyToMany(joinColumnConditions, inverseJoinColumnConditions, parameters);
+    }
+
+    queryManyToMany(joinColumnConditions, inverseJoinColumnConditions, parameters) {
+        const mainAlias = this.relation.propertyName;
+        const joinAlias = this.relation.junctionEntityMetadata!.tableName;
+        let queryBuilder = this.connection
+            .createQueryBuilder(this.queryRunner)
+            .select(mainAlias)
+            .from(this.type, mainAlias)
+            .innerJoin(joinAlias, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(' AND '))
+            .setParameters(parameters);
+
         if (this.customQuery) {
             this.customQuery(queryBuilder);
         }

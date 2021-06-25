@@ -1,5 +1,5 @@
-import {RelationQueryBuilder} from './query-builders/relation.query-builder';
-import {SelectQueryBuilder} from 'typeorm';
+import { RelationQueryBuilder } from './query-builders/relation.query-builder';
+import { SelectQueryBuilder } from 'typeorm';
 
 export type RelationParams =
     string
@@ -7,7 +7,13 @@ export type RelationParams =
     | (string | { [key: string]: (name: SelectQueryBuilder<any>) => void })[];
 
 export async function loadRelations(entities, relationNames: RelationParams) {
+    if (!entities) {
+        return;
+    }
     entities = Array.isArray(entities) ? entities : [entities];
+    if (!entities.length) {
+        return;
+    }
     if (typeof relationNames === 'string') {
         await new RelationQueryBuilder(entities, relationNames).load();
     } else {

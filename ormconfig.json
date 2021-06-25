@@ -6,17 +6,18 @@
   "username": "test",
   "password": "test",
   "database": "test-database",
-  "synchronize": true,
+  "synchronize": false,
   "logging": false,
   "keepConnectionAlive": true,
+  "migrationsRun": true,
   "entities": [
     "src/entity/*.ts"
   ],
   "subscribers": [
-    "src/subscriber/*.js"
+    "src/subscriber/*.ts"
   ],
   "migrations": [
-    "src/migration/*.js"
+    "src/migration/*.ts"
   ],
   "cli": {
     "entitiesDir": "src/entity",
