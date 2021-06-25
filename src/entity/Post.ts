@@ -1,6 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { User } from './User';
 import { BaseEntity } from '../../libs';
+import { Category } from './Category';
+import { PostCategory } from './PostCategory';
 
 @Entity()
 export class Post extends BaseEntity {
@@ -10,13 +12,17 @@ export class Post extends BaseEntity {
     @Column()
     title: string;
 
-    // @ManyToMany((type) => Category, (category) => category. )
-    // @JoinTable()
-    // categories: Category[];
-
     @ManyToOne(() => User, (user) => user.posts)
     user: User;
 
     @Column({ nullable: true })
     userId: string;
+
+    @OneToMany(() => PostCategory, postToCategory => postToCategory.post)
+    public postCategories!: PostCategory[];
+
+    @ManyToMany(() => Category, (category) => category.posts, { createForeignKeyConstraints: false })
+    @JoinTable({ name: 'postCategories' })
+    categories: Category[];
+
 }

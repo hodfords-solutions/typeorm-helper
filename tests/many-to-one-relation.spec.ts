@@ -2,10 +2,13 @@ import {createConnection, getConnection} from 'typeorm';
 import {Post} from '../src/entity/Post';
 import '../libs';
 import {PostRepository} from '../src/repositories/PostRepository';
+import { createCategories, createPosts, createUsers } from './test-helper';
 
 describe('Test relations many to one', () => {
     beforeAll(async () => {
         await createConnection();
+        // await createUsers();
+        // await createPosts();
     });
 
     it('Single', async () => {

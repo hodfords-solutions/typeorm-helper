@@ -56,7 +56,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
 
     private async paginateQueryBuilder(query: SelectQueryBuilder<Entity>, options) {
         const [items, total] = await query
-            .take(options.page)
+            .take(options.limit)
             .skip((options.page - 1) * options.limit)
             .getManyAndCount();
         return new PaginationCollection<Entity>({
