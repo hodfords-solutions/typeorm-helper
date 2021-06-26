@@ -1,7 +1,7 @@
-import {Column, Entity, JoinColumn, ManyToMany, OneToMany, PrimaryGeneratedColumn, RelationId} from 'typeorm';
-import {BaseEntity} from '../../libs';
-import {Post} from './Post';
-import {PostCategory} from './PostCategory';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from '../../libs';
+import { Post } from './Post';
+import { PostCategory } from './PostCategory';
 
 @Entity()
 export class Category extends BaseEntity {
@@ -16,7 +16,4 @@ export class Category extends BaseEntity {
 
     @OneToMany(() => PostCategory, postToCategory => postToCategory.category)
     public postCategories!: PostCategory[];
-
-    // @RelationId((post: Post) => post.postCategories)
-    // public postIds: number[]
 }
