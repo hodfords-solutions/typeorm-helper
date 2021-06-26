@@ -4,9 +4,12 @@ import { createCategories, createPosts, createUsers } from '../../tests/test-hel
 export class test1624616221362 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await createUsers();
-        await createPosts();
-        await createCategories();
+        setTimeout(async () => {
+            await createUsers();
+            await createPosts();
+            await createCategories();
+        }, 5000);
+
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

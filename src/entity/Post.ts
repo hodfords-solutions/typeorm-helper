@@ -1,9 +1,8 @@
-import {Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany} from 'typeorm';
-import {User} from './User';
-import {BaseEntity} from '../../libs';
-import {Category} from './Category';
-import {PostCategory} from './PostCategory';
-import {LoadRelation} from '../../libs/decorators/load-relation.decorator';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { User } from './User';
+import { BaseEntity } from '../../libs';
+import { Category } from './Category';
+import { PostCategory } from './PostCategory';
 
 @Entity()
 export class Post extends BaseEntity {
@@ -16,15 +15,14 @@ export class Post extends BaseEntity {
     @ManyToOne(() => User, (user) => user.posts)
     user: User;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     userId: string;
 
     @OneToMany(() => PostCategory, postToCategory => postToCategory.post)
     public postCategories!: PostCategory[];
 
-    @ManyToMany(() => Category, (category) => category.posts, {createForeignKeyConstraints: false})
-    @JoinTable({name: 'postCategories'})
-    @LoadRelation(() => PostCategory)
+    @ManyToMany(() => Category, (category) => category.posts, { createForeignKeyConstraints: false })
+    @JoinTable({ name: 'postCategories' })
     categories: Category[];
 
 }

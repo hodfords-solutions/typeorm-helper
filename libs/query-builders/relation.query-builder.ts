@@ -1,8 +1,6 @@
-import {uniq} from 'lodash';
-import {Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder} from 'typeorm';
-import {RelationMetadata} from 'typeorm/metadata/RelationMetadata';
-import {PostCategory} from '../../src/entity/PostCategory';
-import {Category} from '../../src/entity/Category';
+import { uniq } from 'lodash';
+import { Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder } from 'typeorm';
+import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
 export class RelationQueryBuilder {
     public relation: RelationMetadata;
@@ -48,9 +46,9 @@ export class RelationQueryBuilder {
         } else if (this.relation.isOneToMany || this.relation.isOneToOneNotOwner) {
             return this.assignOneToManyOrOneToOneNotOwner();
         } else if (this.relation.isManyToManyOwner) {
-            return this.assignManyToMany();
+            return this.assignManyToManyOwner();
         } else {
-            return this.assignManyToMany();
+            return this.assignManyToManyNotOwner();
         }
     }
 
@@ -80,8 +78,42 @@ export class RelationQueryBuilder {
         }
     }
 
-    assignManyToMany() {
-        console.log(this.results);
+    assignManyToManyOwner() {
+        for (let entity of this.entities) {
+            entity[this.relationName] = this.results.filter((result) => {
+                for (let column of this.relation.joinColumns) {
+                    console.log(column.databaseName, column.referencedColumn.databaseName)
+                    if (!result[this.relation.junctionEntityMetadata!.tableName].find((child) => {
+                        return child[column.databaseName] === entity[column.referencedColumn.databaseName];
+                    })) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+
+        for (let result of this.results) {
+            delete result[`${this.relation.junctionEntityMetadata!.tableName}`];
+        }
+    }
+
+    assignManyToManyNotOwner() {
+        for (let entity of this.entities) {
+            entity[this.relationName] = this.results.filter((result) => {
+                for (let column of this.relation.inverseRelation.inverseJoinColumns) {
+                    if (!result[this.relation.junctionEntityMetadata!.tableName].find((child) => {
+                        return child[column.databaseName] === entity[column.referencedColumn.databaseName];
+                    })) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+        for (let result of this.results) {
+            delete result[`${this.relation.junctionEntityMetadata!.tableName}`];
+        }
     }
 
     addCustomQuery(customQuery: (name: SelectQueryBuilder<any>) => void) {
@@ -173,24 +205,11 @@ export class RelationQueryBuilder {
     }
 
     queryManyToMany(joinColumnConditions, inverseJoinColumnConditions, parameters) {
-        // console.log(this.relation);
-        // // let a = await this.connection
-        // //     .createQueryBuilder(this.queryRunner)
-        // //     .select(this.relation.propertyName)
-        // //     .from([Category, this.relation.propertyName)
-        // //     .getMany();
-        // // console.log(this.type);
-        // // console.log(a);
-        console.log(this.customRelation);
         const mainAlias = this.relation.propertyName;
-        console.log(mainAlias);
         const joinAlias = this.relation.junctionEntityMetadata!.tableName;
-        console.log(joinAlias);
         let queryBuilder = this.connection
-            .createQueryBuilder(this.queryRunner)
-            .select([mainAlias, joinAlias])
-            .from(this.customRelation.type, mainAlias)
-            .innerJoin(joinAlias, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(' AND '))
+            .createQueryBuilder(this.type, mainAlias, this.queryRunner)
+            .innerJoinAndMapMany(`${mainAlias}.${joinAlias}`, `${mainAlias}.${joinAlias}`, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(' AND '))
             .setParameters(parameters);
 
         if (this.customQuery) {

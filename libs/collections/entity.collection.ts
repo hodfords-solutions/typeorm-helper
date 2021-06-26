@@ -1,4 +1,4 @@
-import {loadRelations, RelationParams} from '../helper';
+import { loadRelations, RelationParams } from '../helper';
 
 export class EntityCollection<Entity> extends Array<Entity> {
     public collect(entities: Entity[]): EntityCollection<Entity> {
