@@ -1,9 +1,12 @@
-import { uniq } from 'lodash';
-import { Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder } from 'typeorm';
-import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import {uniq} from 'lodash';
+import {Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder} from 'typeorm';
+import {RelationMetadata} from 'typeorm/metadata/RelationMetadata';
+import {PostCategory} from '../../src/entity/PostCategory';
+import {Category} from '../../src/entity/Category';
 
 export class RelationQueryBuilder {
     public relation: RelationMetadata;
+    public customRelation: RelationMetadata;
     private connection: Connection;
     private customQuery: (queryBuilder: SelectQueryBuilder<any>) => void;
     public results: any[];
@@ -23,6 +26,7 @@ export class RelationQueryBuilder {
         this.entities = Array.isArray(entityOrEntities) ? entityOrEntities : [entityOrEntities];
         let entity = this.connection.getMetadata(this.entities[0].constructor);
         this.relation = entity.relations.find((relation) => relation.propertyName === relationName);
+        this.customRelation = entity.relations.find((relation) => relation.propertyName === `custom_${relationName}`);
     }
 
     async load() {
@@ -44,9 +48,9 @@ export class RelationQueryBuilder {
         } else if (this.relation.isOneToMany || this.relation.isOneToOneNotOwner) {
             return this.assignOneToManyOrOneToOneNotOwner();
         } else if (this.relation.isManyToManyOwner) {
-            return this.assignOneToManyOrOneToOneNotOwner();
+            return this.assignManyToMany();
         } else {
-            return this.assignOneToManyOrOneToOneNotOwner();
+            return this.assignManyToMany();
         }
     }
 
@@ -74,6 +78,10 @@ export class RelationQueryBuilder {
                 return true;
             });
         }
+    }
+
+    assignManyToMany() {
+        console.log(this.results);
     }
 
     addCustomQuery(customQuery: (name: SelectQueryBuilder<any>) => void) {
@@ -165,18 +173,29 @@ export class RelationQueryBuilder {
     }
 
     queryManyToMany(joinColumnConditions, inverseJoinColumnConditions, parameters) {
+        // console.log(this.relation);
+        // // let a = await this.connection
+        // //     .createQueryBuilder(this.queryRunner)
+        // //     .select(this.relation.propertyName)
+        // //     .from([Category, this.relation.propertyName)
+        // //     .getMany();
+        // // console.log(this.type);
+        // // console.log(a);
+        console.log(this.customRelation);
         const mainAlias = this.relation.propertyName;
+        console.log(mainAlias);
         const joinAlias = this.relation.junctionEntityMetadata!.tableName;
+        console.log(joinAlias);
         let queryBuilder = this.connection
             .createQueryBuilder(this.queryRunner)
-            .select(mainAlias)
-            .from(this.type, mainAlias)
+            .select([mainAlias, joinAlias])
+            .from(this.customRelation.type, mainAlias)
             .innerJoin(joinAlias, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(' AND '))
             .setParameters(parameters);
 
         if (this.customQuery) {
             this.customQuery(queryBuilder);
         }
-        return queryBuilder.getMany();
+        return queryBuilder.getMany() as any;
     }
 }

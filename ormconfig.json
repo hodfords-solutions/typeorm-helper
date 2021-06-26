@@ -7,9 +7,10 @@
   "password": "test",
   "database": "test-database",
   "synchronize": false,
-  "logging": false,
+  "logging": true,
   "keepConnectionAlive": true,
   "migrationsRun": true,
+  "migrationsDir": "src/migration",
   "entities": [
     "src/entity/*.ts"
   ],
