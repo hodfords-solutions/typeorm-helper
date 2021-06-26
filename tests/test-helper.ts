@@ -1,8 +1,8 @@
-import { randomInt } from 'crypto';
-import { User } from '../src/entity/User';
-import { Post } from '../src/entity/Post';
-import { createConnection } from 'typeorm';
-import { Category } from '../src/entity/Category';
+import {randomInt} from 'crypto';
+import {User} from '../src/entity/User';
+import {Post} from '../src/entity/Post';
+import {createConnection} from 'typeorm';
+import {Category} from '../src/entity/Category';
 
 export async function createUsers() {
     let count = randomInt(15, 30);

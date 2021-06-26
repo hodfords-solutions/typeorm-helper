@@ -1,17 +1,17 @@
-import { Column, PrimaryGeneratedColumn, Entity, ManyToMany, JoinTable, PrimaryColumn, ManyToOne } from 'typeorm';
-import { BaseEntity } from '../../libs';
-import { Post } from './Post';
-import { Category } from './Category';
+import {Column, PrimaryGeneratedColumn, Entity, ManyToMany, JoinTable, PrimaryColumn, ManyToOne} from 'typeorm';
+import {BaseEntity} from '../../libs';
+import {Post} from './Post';
+import {Category} from './Category';
 
 @Entity('postCategories')
 export class PostCategory extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: true })
+    @Column({nullable: true})
     postId: number;
 
-    @Column({ nullable: true })
+    @Column({nullable: true})
     categoryId: number;
 
     @ManyToOne(() => Post, post => post.postCategories)
