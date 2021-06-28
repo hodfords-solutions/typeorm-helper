@@ -1,10 +1,19 @@
 import { uniq } from 'lodash';
-import { Brackets, Connection, getConnection, ObjectLiteral, QueryRunner, SelectQueryBuilder } from 'typeorm';
+import {
+    Brackets,
+    Connection,
+    getConnection,
+    ObjectLiteral,
+    QueryBuilder,
+    QueryRunner,
+    SelectQueryBuilder
+} from 'typeorm';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import { RelationConditionInterface } from '../interfaces/relation-condition.interface';
 
 export class RelationQueryBuilder {
     public relation: RelationMetadata;
-    public customRelation: RelationMetadata;
+    public relationCondition: RelationConditionInterface;
     private connection: Connection;
     private customQuery: (queryBuilder: SelectQueryBuilder<any>) => void;
     public results: any[];
@@ -24,7 +33,7 @@ export class RelationQueryBuilder {
         this.entities = Array.isArray(entityOrEntities) ? entityOrEntities : [entityOrEntities];
         let entity = this.connection.getMetadata(this.entities[0].constructor);
         this.relation = entity.relations.find((relation) => relation.propertyName === relationName);
-        this.customRelation = entity.relations.find((relation) => relation.propertyName === `custom_${relationName}`);
+        this.relationCondition = entity.relationConditions.find((relation) => relation.propertyName === relationName);
     }
 
     async load() {
@@ -82,7 +91,7 @@ export class RelationQueryBuilder {
         for (let entity of this.entities) {
             entity[this.relationName] = this.results.filter((result) => {
                 for (let column of this.relation.joinColumns) {
-                    console.log(column.databaseName, column.referencedColumn.databaseName)
+                    console.log(column.databaseName, column.referencedColumn.databaseName);
                     if (!result[this.relation.junctionEntityMetadata!.tableName].find((child) => {
                         return child[column.databaseName] === entity[column.referencedColumn.databaseName];
                     })) {
@@ -132,6 +141,15 @@ export class RelationQueryBuilder {
         return uniq(this.entities.map((entity) => entity[column]));
     }
 
+    private applyQueryBuilder(queryBuilder: SelectQueryBuilder<any>) {
+        if (this.customQuery) {
+            this.customQuery(queryBuilder);
+        }
+        if (this.relationCondition?.options?.query) {
+            this.relationCondition.options.query(queryBuilder);
+        }
+    }
+
     queryOneToManyOrOneToOneNotOwner() {
         let queryBuilder = this.connection
             .createQueryBuilder(this.queryRunner)
@@ -146,9 +164,7 @@ export class RelationQueryBuilder {
                 }
             })
         );
-        if (this.customQuery) {
-            this.customQuery(queryBuilder);
-        }
+        this.applyQueryBuilder(queryBuilder);
         return queryBuilder.getMany();
     }
 
@@ -166,9 +182,7 @@ export class RelationQueryBuilder {
                 }
             })
         );
-        if (this.customQuery) {
-            this.customQuery(queryBuilder);
-        }
+        this.applyQueryBuilder(queryBuilder);
         return queryBuilder.getMany();
     }
 
@@ -212,9 +226,7 @@ export class RelationQueryBuilder {
             .innerJoinAndMapMany(`${mainAlias}.${joinAlias}`, `${mainAlias}.${joinAlias}`, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(' AND '))
             .setParameters(parameters);
 
-        if (this.customQuery) {
-            this.customQuery(queryBuilder);
-        }
+        this.applyQueryBuilder(queryBuilder);
         return queryBuilder.getMany() as any;
     }
 }

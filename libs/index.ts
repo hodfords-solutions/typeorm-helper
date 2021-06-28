@@ -1,3 +1,11 @@
 export * from './entities/base.entity';
 export * from './repositories/base.repository';
+export * from './collections/entity.collection';
+export * from './collections/pagination.collection';
+export * from './query-builders/relation.query-builder';
+export * from './repositories/base.repository';
+export * from './helper';
+import './metadata/entity-metadata';
+import './metadata/metadata-args-storage';
 import './query-builders/select.query-builder';
+import './repositories/repository';
