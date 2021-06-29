@@ -14,6 +14,6 @@ export class Category extends BaseEntity {
     @ManyToMany(() => Post, (post) => post.categories)
     posts: Post[];
 
-    @OneToMany(() => PostCategory, postToCategory => postToCategory.category)
+    @OneToMany(() => PostCategory, (postToCategory) => postToCategory.category)
     public postCategories!: PostCategory[];
 }

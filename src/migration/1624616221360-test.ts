@@ -2,7 +2,6 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import { createCategories, createPosts, createUsers } from '../../tests/test-helper';
 
 export class test1624616221360 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
             `
@@ -50,10 +49,7 @@ ALTER TABLE ONLY "public"."postCategories" ADD CONSTRAINT "FK_3bf2fed7d3ad8c82e2
 ALTER TABLE ONLY "public"."postCategories" ADD CONSTRAINT "FK_e31f6fbb456b1333e4dac6ea280" FOREIGN KEY ("postId") REFERENCES post(id) NOT DEFERRABLE;
             `
         );
-
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+    public async down(queryRunner: QueryRunner): Promise<void> {}
 }

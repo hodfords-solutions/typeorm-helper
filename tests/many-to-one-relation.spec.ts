@@ -1,7 +1,7 @@
-import {createConnection, getConnection} from 'typeorm';
-import {Post} from '../src/entity/Post';
+import { createConnection, getConnection } from 'typeorm';
+import { Post } from '../src/entity/Post';
 import '../libs';
-import {PostRepository} from '../src/repositories/PostRepository';
+import { PostRepository } from '../src/repositories/PostRepository';
 import { createCategories, createPosts, createUsers } from './test-helper';
 
 describe('Test relations many to one', () => {
@@ -48,7 +48,7 @@ describe('Test relations many to one', () => {
 
     it('Pagination', async () => {
         let postRepo = getConnection().getCustomRepository(PostRepository);
-        let postPagination = await postRepo.pagination({}, {page: 1, perPage: 10});
+        let postPagination = await postRepo.pagination({}, { page: 1, perPage: 10 });
         await postPagination.loadRelation('user');
 
         for (let post of postPagination.items) {
