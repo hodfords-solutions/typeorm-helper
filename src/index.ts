@@ -8,8 +8,8 @@ import { User } from './entity/User';
 // connection settings are in the "ormconfig.json" file
 createConnection()
     .then(async (connection) => {
-        let users = await User.createQueryBuilder().limit(2).getMany();
-        await users.loadRelation('posts');
+        let users = await User.createQueryBuilder().limit(3).getMany();
+        await users.loadRelation(['latestPost', 'posts']);
         console.log(users);
         // let categories = await Category.createQueryBuilder().limit(2).getMany();
         // await categories.loadRelation('posts');
@@ -22,7 +22,6 @@ createConnection()
         // //     .getOne();
         // // console.log(a);
         // console.log(posts);
-        setTimeout(() => {
-        }, 2000000);
+        setTimeout(() => {}, 2000000);
     })
     .catch((error) => console.log('Error: ', error));

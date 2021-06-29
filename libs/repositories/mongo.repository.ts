@@ -1,9 +1,8 @@
 import { FindConditions, FindManyOptions, ObjectLiteral } from 'typeorm';
 import { EntityCollection } from '../collections/entity.collection';
-import { Repository } from 'typeorm/repository/Repository';
 
 declare module 'typeorm/repository/MongoRepository' {
-    interface MongoRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
+    interface MongoRepository<Entity extends ObjectLiteral> {
         find(options?: FindManyOptions<Entity>): Promise<EntityCollection<Entity>>;
 
         find(conditions?: FindConditions<Entity>): Promise<EntityCollection<Entity>>;

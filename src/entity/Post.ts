@@ -18,11 +18,10 @@ export class Post extends BaseEntity {
     @Column({ nullable: true })
     userId: string;
 
-    @OneToMany(() => PostCategory, postToCategory => postToCategory.post)
+    @OneToMany(() => PostCategory, (postToCategory) => postToCategory.post)
     public postCategories!: PostCategory[];
 
     @ManyToMany(() => Category, (category) => category.posts, { createForeignKeyConstraints: false })
     @JoinTable({ name: 'postCategories' })
     categories: Category[];
-
 }

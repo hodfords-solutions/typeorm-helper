@@ -14,7 +14,9 @@ describe('Test relations many to many', () => {
         let postCategories = await PostCategory.find({ where: { postId: post.id } });
         expect(post.categories.length).toEqual(postCategories.length);
         for (let category of post.categories) {
-            expect(postCategories).toEqual(expect.arrayContaining([expect.objectContaining({ categoryId: category.id })]));
+            expect(postCategories).toEqual(
+                expect.arrayContaining([expect.objectContaining({ categoryId: category.id })])
+            );
         }
     };
     it('Single', async () => {

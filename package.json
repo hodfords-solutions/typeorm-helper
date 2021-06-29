@@ -39,6 +39,7 @@
   },
   "scripts": {
     "start": "tsc && node src/index.js",
+    "build": "tsc",
     "typeorm": "./node_modules/.bin/typeorm ",
     "format": "prettier --write \"**/*.ts\"",
     "check": "prettier --check \"**/*.ts\"",

@@ -7,7 +7,7 @@
   "password": "test",
   "database": "test",
   "synchronize": false,
-  "logging": true,
+  "logging": false,
   "keepConnectionAlive": true,
   "migrationsRun": true,
   "migrationsDir": "src/migration",

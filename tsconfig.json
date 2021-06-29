@@ -11,5 +11,14 @@
     "outDir": "dist",
     "baseUrl": "./",
     "incremental": true
-  }
+  },
+  "include": [
+    "libs",
+  ],
+  "exclude": [
+    "tests",
+    "src",
+    "dist",
+    "node_modules"
+  ]
 }

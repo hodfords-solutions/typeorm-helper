@@ -2,7 +2,7 @@ import { RelationQueryBuilder } from './query-builders/relation.query-builder';
 import { SelectQueryBuilder } from 'typeorm';
 
 export type RelationParams =
-    string
+    | string
     | string[]
     | (string | { [key: string]: (name: SelectQueryBuilder<any>) => void })[];
 
