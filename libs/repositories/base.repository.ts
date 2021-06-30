@@ -76,7 +76,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         return item;
     }
 
-    exists(conditions?: FindConditions<Entity>) {
-        return !!this.findOne(conditions, { select: ['id'] });
+    async exists(conditions?: FindConditions<Entity>) {
+        return Boolean(await this.findOne(conditions, { select: ['id'] }));
     }
 }
