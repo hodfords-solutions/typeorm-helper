@@ -1,8 +1,17 @@
-import { FindConditions, FindManyOptions, getConnection, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+    EntityNotFoundError,
+    FindConditions,
+    FindManyOptions,
+    getConnection,
+    ObjectLiteral,
+    Repository,
+    SelectQueryBuilder
+} from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { FindOneOptions } from 'typeorm/browser';
 import { ObjectType } from 'typeorm/common/ObjectType';
 import { PaginationCollection } from '../collections/pagination.collection';
+import { EntityCollection } from '../collections/entity.collection';
 
 export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
     static make<T>(this: ObjectType<T>): T {
@@ -15,6 +24,9 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     }
 
     async findById(id: string | number, options?: FindOneOptions<Entity>) {
+        if (!id) {
+            throw new Error('Id can not null');
+        }
         return await super.findOneOrFail(id, options);
     }
 
