@@ -1,5 +1,7 @@
 import { RelationQueryBuilder } from './query-builders/relation.query-builder';
 import { SelectQueryBuilder } from 'typeorm';
+import { WhereExpressionInterface } from './interfaces/where-expression.interface';
+import { CollectionWhereExpression } from './where-expression/collection.where-expression';
 
 export type RelationParams =
     | string
@@ -28,4 +30,8 @@ export async function loadRelations(entities, relationNames: RelationParams) {
             }
         }
     }
+}
+
+export function collectExpression(whereExpressions: WhereExpressionInterface[]){
+    return new CollectionWhereExpression(whereExpressions);
 }
