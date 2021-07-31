@@ -1,38 +1,52 @@
 # TYPEORM HELPER
+
 Provide functions for relational handling in Typeorm.
 
 ## How to use?
+
 Extend BaseEntity from typeorm-helper
+
 ```typescript
-export class Post extends BaseEntity {}
+export class Post extends BaseEntity {
+}
 ```
 
 Extend BaseRepository from typeorm-helper
+
 ```typescript
 @EntityRepository(Post)
-export class PostRepository extends BaseRepository<Post> {}
+export class PostRepository extends BaseRepository<Post> {
+}
 ```
 
 ## RELATION LOADER
 
 ##### Single
+
 ```typescript
 let user = await User.createQueryBuilder().getOne();
 await user.loadRelation(['posts', 'roles']);
 ```
+
 ##### Multiple
+
 ```typescript
 let users = await User.createQueryBuilder().find();
-await users.loadRelation({ 'posts': (query) => {
-    query.where(' orginationId != :orginationId ', { orginationId: 1 })
-} });
+await users.loadRelation({
+    'posts': (query) => {
+        query.where(' orginationId != :orginationId ', { orginationId: 1 })
+    }
+});
 ```
+
 ##### Pagination
+
 ```typescript
 let userRepo = getConnection().getCustomRepository(UserRepository);
-let userPagination = await userRepo.pagination( {}, { page: 1, perPage: 10 } );
+let userPagination = await userRepo.pagination({}, { page: 1, perPage: 10 });
 await userPagination.loadRelation('posts');
 ```
+
 ## Repository
 
 ```typescript
@@ -42,6 +56,7 @@ export class CategoryRepository extends BaseRepository<Category> {
 ```
 
 ## Entity
+
 ```typescript
 @Entity()
 export class Category extends BaseEntity {
@@ -58,8 +73,11 @@ export class Category extends BaseEntity {
     public postCategories!: PostCategory[];
 }
 ```
+
 ## Relation condition
+
 ##### Simple
+
 ```typescript
 @Entity()
 export class User extends BaseEntity {
@@ -93,6 +111,7 @@ export class User extends BaseEntity {
 ```
 
 ### Map data
+
 ```typescript
 @Entity()
 export class User extends BaseEntity {
@@ -116,4 +135,44 @@ export class User extends BaseEntity {
     @OneToMany(() => Post, (post) => post.user, { cascade: true })
     posts: Post[];
 }
+```
+
+## WHERE EXPRESSION
+
+```typescript
+export class BelongToUserWhereExpression extends BaseWhereExpression {
+    constructor(private userId: number) {
+        super();
+    }
+
+    where(query: WhereExpression) {
+        query.where({ userId: this.userId });
+    }
+}
+```
+
+Use:
+```typescript
+this.postRepo.find({
+    where: new BelongToUserWhereExpression(1)
+})
+```
+
+## Query Builder
+
+```typescript
+export class PostOfUserQuery extends BaseQuery<Post> {
+    constructor(private userId: number) {
+        super();
+    }
+
+    query(query: SelectQueryBuilder<Post>) {
+        query.where({ userId: this.userId })
+            .limit(10);
+    }
+}
+```
+
+```typescript
+this.postRepo.find(new PostOfUserQuery(1));
 ```
