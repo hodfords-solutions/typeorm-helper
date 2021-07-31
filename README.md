@@ -138,7 +138,7 @@ export class User extends BaseEntity {
 ```
 
 ## WHERE EXPRESSION
-
+>For queries that are complex, need to be reused, or contain a lot of logic. We should use a class to store it.
 ```typescript
 export class BelongToUserWhereExpression extends BaseWhereExpression {
     constructor(private userId: number) {
@@ -159,7 +159,7 @@ this.postRepo.find({
 ```
 
 ## Query Builder
-
+>For queries that are complex, need to be reused, or contain a lot of logic. We should use a class to store it.
 ```typescript
 export class PostOfUserQuery extends BaseQuery<Post> {
     constructor(private userId: number) {
@@ -170,9 +170,70 @@ export class PostOfUserQuery extends BaseQuery<Post> {
         query.where({ userId: this.userId })
             .limit(10);
     }
+
+    order(query: SelectQueryBuilder<Post>) {
+        query.orderBy('id', 'DESC');
+    }
 }
 ```
 
 ```typescript
 this.postRepo.find(new PostOfUserQuery(1));
+```
+
+## MIGRATIONS
+> We create a class, which wraps the migration of typeorm, allowing for simpler and more readable. For the update command, let's use pure queries for the time being.
+
+- Example: 
+```typescript
+export class CreateUserTable1626749239046 extends BaseMigration {
+    async run(queryRunner: QueryRunner) {
+        await this.create('User', (table) => {
+            table.primaryUuid('id');
+            table.string('email').index();
+            table.string('firstName').nullable();
+            table.string('lastName').nullable();
+            table.string('password').nullable();
+            table.integer('role');
+            table.string('language').length(10).default("'en'");
+            table.timestamp('lastLoginAt').nullable();
+            table.uuid('enterpriseId').nullable().index().foreign('Enterprise');
+            table.createdAt().index();
+            table.updatedAt();
+            table.deletedAt();
+        });
+    }
+
+    async rollback(queryRunner: QueryRunner) {
+        await this.drop('Fuel');
+    }
+}
+```
+
+### Table method
+```typescript
+    string(name: string, length?: number, options?: Partial<TableColumnOptions>): BaseColumn;
+    strings(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    uuid(name?: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    primaryUuid(name?: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    integer(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    integers(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    timestamp(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    boolean(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    jsonb(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    json(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    decimal(name: string,precision: number = 10,scale: number = 2,options?: Partial<TableColumnOptions>): BaseColumn;
+    baseTime(): void;
+    createdAt(): BaseColumn;
+    updatedAt(): BaseColumn;
+    deletedAt(): BaseColumn;
+```
+
+### Column method
+```typescript
+    length(length: number): this;
+    nullable(): this;
+    index(): this;
+    default(value: any): this;
+    foreign(table: string, column?: string, onDelete?: string, onUpdate?: string): void;
 ```

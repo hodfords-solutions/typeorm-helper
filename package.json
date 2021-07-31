@@ -1,6 +1,6 @@
 {
   "name": "@hodfords/typeorm-helper",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Typeorm Helper",
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -35,9 +35,7 @@
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.34"
   },
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "scripts": {
     "start": "tsc && node src/index.js",
     "build": "tsc && cp package.json dist/package.json",
