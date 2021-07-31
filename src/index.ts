@@ -1,16 +1,22 @@
-import { createConnection } from 'typeorm';
+import { createConnection, FindConditions } from 'typeorm';
+import { PostRepository } from './repositories/PostRepository';
+import { PostOfUserQuery } from './queries/post-of-user.query';
 import { Post } from './entity/Post';
-import { Category } from './entity/Category';
-import { createCategories, createPosts, createUsers } from '../tests/test-helper';
-import { PostCategory } from './entity/PostCategory';
-import { User } from './entity/User';
 
 // connection settings are in the "ormconfig.json" file
 createConnection()
     .then(async (connection) => {
-        let users = await User.createQueryBuilder().limit(3).getMany();
-        await users.loadRelation(['latestPost', 'posts']);
-        console.log(users);
+        let b: FindConditions<Post> = {
+            userId: '1'
+        };
+        let a = await PostRepository.make().pagination({
+            where: { userId: 1 },
+            orderBy: { id: 'DESC' }
+        }, { perPage: 1, page: 1 });
+        console.log(a);
+        // let users = await User.createQueryBuilder().limit(3).getMany();
+        // await users.loadRelation(['latestPost', 'posts']);
+        // console.log(users);
         // let categories = await Category.createQueryBuilder().limit(2).getMany();
         // await categories.loadRelation('posts');
         //
@@ -22,6 +28,7 @@ createConnection()
         // //     .getOne();
         // // console.log(a);
         // console.log(posts);
-        setTimeout(() => {}, 2000000);
+        setTimeout(() => {
+        }, 2000000);
     })
     .catch((error) => console.log('Error: ', error));
