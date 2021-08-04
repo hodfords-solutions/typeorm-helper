@@ -234,6 +234,7 @@ export class CreateUserTable1626749239046 extends BaseMigration {
     length(length: number): this;
     nullable(): this;
     index(): this;
+    unique(): this;
     default(value: any): this;
     foreign(table: string, column?: string, onDelete?: string, onUpdate?: string): void;
 ```
