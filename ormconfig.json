@@ -12,7 +12,7 @@
   "migrationsRun": true,
   "migrationsDir": "src/migration",
   "entities": [
-    "src/entity/*.ts"
+    "src/entity/*.js"
   ],
   "subscribers": [
     "src/subscriber/*.ts"

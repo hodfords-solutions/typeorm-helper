@@ -1,4 +1,5 @@
 import {
+    DeepPartial,
     EntityNotFoundError,
     FindConditions,
     FindManyOptions,
@@ -6,7 +7,8 @@ import {
     ObjectID,
     ObjectLiteral,
     Repository,
-    SelectQueryBuilder
+    SelectQueryBuilder,
+    UpdateResult
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { FindOneOptions } from 'typeorm/browser';
@@ -163,6 +165,53 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
             return (await this.applyQueryBuilder(optionsOrConditions)).getCount();
         }
         return await super.count(optionsOrConditions);
+    }
+
+
+    /**
+     * Must use this method inside transaction for deleting multiple entities
+     */
+    async deleteOrFail(criteria: FindConditions<Entity>) {
+        const recordCount = await this.count(criteria);
+        const queryResult = await this.delete(criteria);
+
+        if (queryResult.affected === 0 || queryResult.affected !== recordCount) {
+            throw new EntityNotFoundError(this.metadata.target, criteria);
+        }
+
+        return queryResult;
+    }
+
+    /**
+     * Must use this method inside transaction for soft deleting multiple entities
+     */
+    async softDeleteOrFail(criteria: FindConditions<Entity>) {
+        const recordCount = await this.count(criteria);
+        const queryResult = await this.softDelete(criteria);
+
+        if (queryResult.affected === 0 || queryResult.affected !== recordCount) {
+            throw new EntityNotFoundError(this.metadata.target, criteria);
+        }
+
+        return queryResult;
+    }
+
+    /**
+     * Must use this method inside transaction for update multiple entities
+     */
+    async updateOrFail(criteria: string | FindConditions<Entity>, partialEntity: DeepPartial<Entity>): Promise<UpdateResult> {
+        const recordCount = await this.count(criteria);
+        const queryResult = await this.update(criteria, partialEntity);
+
+        if (queryResult.affected === 0 || queryResult.affected !== recordCount) {
+            throw new EntityNotFoundError(this.metadata.target, criteria);
+        }
+
+        return queryResult;
+    }
+
+    async existOrFail(criteria: string | FindConditions<Entity>): Promise<boolean> {
+        return Boolean(await this.findOneOrFail(criteria, { select: ['id'] }));
     }
 
     async exists(conditions?: FindConditions<Entity> | BaseQuery<Entity>) {

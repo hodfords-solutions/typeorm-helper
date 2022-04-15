@@ -17,6 +17,11 @@ export class BaseColumn {
         return this;
     }
 
+    public unique() {
+        this.tableColumn.isUnique = true;
+        return this;
+    }
+
     public index() {
         this.isIndex = true;
         return this;

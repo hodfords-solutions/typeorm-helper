@@ -7,7 +7,7 @@ export class RelationQueryBuilder {
     public relation: RelationMetadata;
     public relationCondition: RelationConditionInterface;
     private connection: Connection;
-    private customQuery: (queryBuilder: SelectQueryBuilder<any>) => void;
+    private customQueries: ((queryBuilder: SelectQueryBuilder<any>) => void)[] = [];
     public results: any[];
     public entities: any[] = [];
 
@@ -151,7 +151,7 @@ export class RelationQueryBuilder {
     }
 
     addCustomQuery(customQuery: (name: SelectQueryBuilder<any>) => void) {
-        this.customQuery = customQuery;
+        this.customQueries.push(customQuery);
     }
 
     public get type() {
@@ -167,8 +167,10 @@ export class RelationQueryBuilder {
     }
 
     private applyQueryBuilder(queryBuilder: SelectQueryBuilder<any>) {
-        if (this.customQuery) {
-            this.customQuery(queryBuilder);
+        if (this.customQueries?.length) {
+            for (let customQuery of this.customQueries){
+                customQuery(queryBuilder);
+            }
         }
         if (this.relationCondition?.options?.query) {
             this.relationCondition.options.query(queryBuilder, this.entities);

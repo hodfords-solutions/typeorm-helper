@@ -50,7 +50,9 @@ export abstract class BaseMigration implements MigrationInterface {
 
     abstract run(queryRunner: QueryRunner);
 
-    abstract rollback(queryRunner: QueryRunner);
+    rollback(queryRunner: QueryRunner) {
+        console.log('No rollback');
+    }
 
     async down(queryRunner: QueryRunner) {
         this.queryRunner = queryRunner;

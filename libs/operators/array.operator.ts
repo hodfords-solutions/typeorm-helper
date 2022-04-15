@@ -1,7 +1,10 @@
 import { FindOperator, Raw } from 'typeorm';
+import { randomBytes } from 'crypto';
 
 function arrayFindRaw(value, operator: string, type: string) {
-    return Raw((column) => ` ${column} ${operator} ARRAY[:rawParam]::${type}[]  `, { rawParam: value });
+    let param = `rawArrayParam${randomBytes(16).toString('hex')}`;
+    let arrayValue = Array.isArray(value) ? value : [value];
+    return Raw((column) => ` ${column} ${operator} ARRAY[:...${param}]::${type}[]  `, { [param]: arrayValue });
 }
 
 export function ArrayContains<T>(value: T | FindOperator<T>, type: string) {
