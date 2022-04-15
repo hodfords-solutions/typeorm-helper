@@ -1,6 +1,6 @@
 {
-  "name": "@hodfords/typeorm-helper",
-  "version": "0.0.11",
+  "name": "@hodford/typeorm-helper",
+  "version": "0.0.28",
   "description": "Typeorm Helper",
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -37,8 +37,8 @@
   },
   "dependencies": {},
   "scripts": {
-    "start": "tsc && node src/index.js",
-    "build": "tsc && cp package.json dist/package.json",
+    "start": "ts-node src/index.ts",
+    "build": "tsc --project tsconfig.prod.json && cp package.json dist/package.json",
     "deploy": "npm run build && npm publish dist",
     "typeorm": "./node_modules/.bin/typeorm ",
     "format": "prettier --write \"**/*.ts\"",

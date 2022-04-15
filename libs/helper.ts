@@ -10,7 +10,7 @@ export type RelationParams =
     | string[]
     | (string | { [key: string]: (name: SelectQueryBuilder<any>) => void })[];
 
-export async function loadRelations(entities, relationNames: RelationParams) {
+export async function loadRelations(entities, relationNames: RelationParams, columns?: string[]) {
     if (!entities) {
         return;
     }
@@ -19,19 +19,31 @@ export async function loadRelations(entities, relationNames: RelationParams) {
         return;
     }
     if (typeof relationNames === 'string') {
-        await new RelationQueryBuilder(entities, relationNames).load();
+        await loadRelation(entities, relationNames, columns);
     } else {
         for (let relationName of relationNames) {
             if (typeof relationName === 'string') {
-                await new RelationQueryBuilder(entities, relationName).load();
+                await loadRelation(entities, relationName, columns);
             } else {
                 let key = Object.keys(relationName)[0];
-                let relationQueryBuilder = new RelationQueryBuilder(entities, key);
-                relationQueryBuilder.addCustomQuery(relationName[key]);
-                await relationQueryBuilder.load();
+                await loadRelation(entities, key, columns, relationName[key]);
             }
         }
     }
+}
+
+async function loadRelation(entities, relationName : string, columns?: string[], customQuery = null) {
+    let relationQueryBuilder = await new RelationQueryBuilder(entities, relationName);
+    if (customQuery) {
+        relationQueryBuilder.addCustomQuery(customQuery);
+    }
+    if (columns?.length) {
+        columns = columns.map((column) => column.includes('.') ? column : `${relationName}.${column}`);
+        relationQueryBuilder.addCustomQuery((query: SelectQueryBuilder<any>) => {
+            query.select(columns);
+        });
+    }
+    await relationQueryBuilder.load();
 }
 
 export function collectExpression(whereExpressions: WhereExpressionInterface[]) {

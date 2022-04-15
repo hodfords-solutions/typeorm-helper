@@ -17,7 +17,7 @@ export class PaginationCollection<Entity> {
         this.currentPage = data.currentPage;
     }
 
-    async loadRelation(relationName) {
-        await this.items.loadRelation(relationName);
+    async loadRelation(relationName, columns?: string[]) {
+        await this.items.loadRelation(relationName, columns);
     }
 }

@@ -6,8 +6,8 @@ export class EntityCollection<Entity> extends Array<Entity> {
         return this;
     }
 
-    async loadRelation(relationNames: RelationParams) {
-        await loadRelations(this, relationNames);
+    async loadRelation(relationNames: RelationParams, columns?: string[]) {
+        await loadRelations(this, relationNames, columns);
         return this;
     }
 }

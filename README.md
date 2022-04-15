@@ -184,7 +184,7 @@ this.postRepo.find(new PostOfUserQuery(1));
 ## MIGRATIONS
 > We create a class, which wraps the migration of typeorm, allowing for simpler and more readable. For the update command, let's use pure queries for the time being.
 
-- Example: 
+- Example:
 ```typescript
 export class CreateUserTable1626749239046 extends BaseMigration {
     async run(queryRunner: QueryRunner) {
@@ -215,6 +215,7 @@ export class CreateUserTable1626749239046 extends BaseMigration {
     string(name: string, length?: number, options?: Partial<TableColumnOptions>): BaseColumn;
     strings(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
     uuid(name?: string, options?: Partial<TableColumnOptions>): BaseColumn;
+    uuids(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
     primaryUuid(name?: string, options?: Partial<TableColumnOptions>): BaseColumn;
     integer(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
     integers(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
@@ -233,6 +234,7 @@ export class CreateUserTable1626749239046 extends BaseMigration {
 ```typescript
     length(length: number): this;
     nullable(): this;
+    unique(): this;
     index(): this;
     default(value: any): this;
     foreign(table: string, column?: string, onDelete?: string, onUpdate?: string): void;

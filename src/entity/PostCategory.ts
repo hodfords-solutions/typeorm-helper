@@ -1,4 +1,4 @@
-import { Column, PrimaryGeneratedColumn, Entity, ManyToMany, JoinTable, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../libs';
 import { Post } from './Post';
 import { Category } from './Category';

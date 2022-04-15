@@ -39,12 +39,38 @@ export class BaseTable {
         );
     }
 
+    public bytea(name: string, options: Partial<TableColumnOptions> = null) {
+        let column = this.getColumnValue(
+            {
+                name,
+                type: 'bytea'
+            },
+            options
+        );
+
+        this.columns.push(column);
+        return column;
+    }
+
     public string(name: string, length: number = 255, options: Partial<TableColumnOptions> = null) {
         let column = this.getColumnValue(
             {
                 name: name,
                 type: 'character varying',
                 length: length as any
+            },
+            options
+        );
+
+        this.columns.push(column);
+        return column;
+    }
+
+    public text(name: string, options: Partial<TableColumnOptions> = null) {
+        let column = this.getColumnValue(
+            {
+                name: name,
+                type: 'text'
             },
             options
         );
@@ -72,6 +98,19 @@ export class BaseTable {
             {
                 name: name,
                 type: 'uuid'
+            },
+            options
+        );
+        this.columns.push(column);
+        return column;
+    }
+
+    public uuids(name: string, options: Partial<TableColumnOptions> = null) {
+        let column = this.getColumnValue(
+            {
+                name: name,
+                type: 'uuid',
+                isArray: true
             },
             options
         );
