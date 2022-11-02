@@ -1,6 +1,6 @@
 {
   "name": "@hodfords/typeorm-helper",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Typeorm Helper",
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hodford/typeorm-helper"
+    "url": "https://github.com/hodfords-community/typeorm-helper"
   },
   "bugs": {
-    "url": "https://github.com/hodford/typeorm-helper/issues"
+    "url": "https://github.com/hodfords-community/typeorm-helper/issues"
   },
   "tags": [
     "orm",
