@@ -14,6 +14,8 @@ export * from './queries/collection.query';
 export * from './migrations/base.column';
 export * from './migrations/base.migration';
 export * from './migrations/base.table';
+export * from './transformers/updated-at-timestamp.transformer';
+export * from './types/pagination-options.type';
 import './metadata/entity-metadata';
 import './metadata/metadata-args-storage';
 import './query-builders/select.query-builder';

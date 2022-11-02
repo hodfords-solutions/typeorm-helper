@@ -16,6 +16,7 @@ import { ObjectType } from 'typeorm/common/ObjectType';
 import { PaginationCollection } from '../collections/pagination.collection';
 import { EntityCollection } from '../collections/entity.collection';
 import { BaseQuery } from '../queries/base.query';
+import { PaginationOptions } from '../types/pagination-options.type';
 
 export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
     static make<T>(this: ObjectType<T>): T {
@@ -36,7 +37,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
 
     async pagination(
         options: FindManyOptions<Entity> | FindConditions<Entity> | SelectQueryBuilder<Entity> | BaseQuery<Entity>,
-        paginationParams: { page?: number; perPage?: number }
+        paginationParams: PaginationOptions
     ) {
         let page = paginationParams.page || 1;
         let limit = paginationParams.perPage;
@@ -144,6 +145,20 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         return (await super.findOneOrFail(optionsOrConditions, maybeOptions)) as any;
     }
 
+    findOneAndReturnId(id?: string | number | Date | ObjectID, options?: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<string>;
+
+    findOneAndReturnId(options?: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<string>;
+
+    findOneAndReturnId(conditions?: FindConditions<Entity> | BaseQuery<Entity>, options?: FindOneOptions<Entity>): Promise<string>;
+
+    async findOneAndReturnId(optionsOrConditions?: string | number | Date | ObjectID | FindOneOptions<Entity> | FindConditions<Entity> | BaseQuery<Entity>, maybeOptions?: FindOneOptions<Entity>): Promise<string> {
+        if (optionsOrConditions instanceof BaseQuery) {
+            return (await (await this.applyQueryBuilder(optionsOrConditions)).select('id').limit(1).getOne() as Entity).id;
+        }
+        return ((await super.findOneOrFail(optionsOrConditions, { ...maybeOptions, select: ['id'] })) as Entity).id;
+    }
+
+
     findAndCount(options?: FindManyOptions<Entity>): Promise<[EntityCollection<Entity>, number]>;
 
     findAndCount(conditions?: FindConditions<Entity> | BaseQuery<Entity>): Promise<[EntityCollection<Entity>, number]>;
@@ -199,7 +214,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     /**
      * Must use this method inside transaction for update multiple entities
      */
-    async updateOrFail(criteria: string | FindConditions<Entity>, partialEntity: DeepPartial<Entity>): Promise<UpdateResult> {
+    async updateOrFail(criteria: FindConditions<Entity>, partialEntity: DeepPartial<Entity>): Promise<UpdateResult> {
         const recordCount = await this.count(criteria);
         const queryResult = await this.update(criteria, partialEntity);
 
