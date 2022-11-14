@@ -144,6 +144,30 @@ export class BaseTable {
         return column;
     }
 
+    public smallint(name: string, options: Partial<TableColumnOptions> = null) {
+        let column = this.getColumnValue(
+            {
+                name: name,
+                type: 'smallint'
+            },
+            options
+        );
+        this.columns.push(column);
+        return column;
+    }
+
+    public bigint(name: string, options: Partial<TableColumnOptions> = null) {
+        let column = this.getColumnValue(
+            {
+                name: name,
+                type: 'bigint'
+            },
+            options
+        );
+        this.columns.push(column);
+        return column;
+    }
+
     public integers(name: string, options: Partial<TableColumnOptions> = null) {
         let column = this.getColumnValue(
             {
@@ -173,6 +197,18 @@ export class BaseTable {
             {
                 name: name,
                 type: 'timestamp'
+            },
+            options
+        );
+        this.columns.push(column);
+        return column;
+    }
+
+    public date(name: string, options: Partial<TableColumnOptions> = null) {
+        let column = this.getColumnValue(
+            {
+                name: name,
+                type: 'date'
             },
             options
         );
