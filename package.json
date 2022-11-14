@@ -1,6 +1,6 @@
 {
   "name": "@hodfords/typeorm-helper",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Typeorm Helper",
   "license": "MIT",
   "readmeFilename": "README.md",
