@@ -4,6 +4,7 @@ import { WhereExpressionInterface } from './interfaces/where-expression.interfac
 import { CollectionWhereExpression } from './where-expression/collection.where-expression';
 import { QueryInterface } from './interfaces/query.interface';
 import { CollectionQuery } from './queries/collection.query';
+import { getChildEntitiesAndRelationName, getEntities, groupRelationName } from './helpers/relation.helper';
 
 export type RelationParams =
     | string
@@ -14,31 +15,40 @@ export async function loadRelations(entities, relationNames: RelationParams, col
     if (!entities) {
         return;
     }
-    entities = Array.isArray(entities) ? entities : [entities];
+    entities = getEntities(entities);
     if (!entities.length) {
         return;
     }
     if (typeof relationNames === 'string') {
         await loadRelation(entities, relationNames, columns);
     } else {
-        for (let relationName of relationNames) {
-            if (typeof relationName === 'string') {
-                await loadRelation(entities, relationName, columns);
-            } else {
-                let key = Object.keys(relationName)[0];
-                await loadRelation(entities, key, columns, relationName[key]);
-            }
+        let relationGroups = groupRelationName(relationNames);
+        for (let [level, relations] of Object.entries(relationGroups)) {
+            await Promise.all(
+                relations.map(async (relation) => {
+                    await loadRelation(entities, relation.name, columns, relation.customQuery);
+                })
+            );
         }
     }
 }
 
-async function loadRelation(entities, relationName : string, columns?: string[], customQuery = null) {
+async function loadRelation(entities, relationName: string, columns?: string[], customQuery = null) {
+    entities = getEntities(entities);
+    if (relationName.includes('.')) {
+        let childEntity = getChildEntitiesAndRelationName(entities, relationName);
+        entities = childEntity.entities;
+        relationName = childEntity.relationName;
+        if (!entities.length) {
+            return;
+        }
+    }
     let relationQueryBuilder = await new RelationQueryBuilder(entities, relationName);
     if (customQuery) {
         relationQueryBuilder.addCustomQuery(customQuery);
     }
     if (columns?.length) {
-        columns = columns.map((column) => column.includes('.') ? column : `${relationName}.${column}`);
+        columns = columns.map((column) => (column.includes('.') ? column : `${relationName}.${column}`));
         relationQueryBuilder.addCustomQuery((query: SelectQueryBuilder<any>) => {
             query.select(columns);
         });
