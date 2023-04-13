@@ -42,10 +42,10 @@ export class RelationQueryBuilder {
     }
 
     assignData() {
-        if (this.relation.isManyToOne || this.relation.isOneToOneOwner) {
-            return this.assignDataManyToOneOrOneToOneOwner();
-        } else if (this.relation.isOneToMany || this.relation.isOneToOneNotOwner) {
-            return this.assignOneToManyOrOneToOneNotOwner();
+        if (this.relation.isManyToOne || this.relation.isOneToOneOwner || this.relation.isOneToOneNotOwner) {
+            return this.assignDataManyToOneOrOneToOne();
+        } else if (this.relation.isOneToMany) {
+            return this.assignOneToMany();
         } else if (this.relation.isManyToManyOwner) {
             return this.assignManyToManyOwner();
         } else {
@@ -53,7 +53,7 @@ export class RelationQueryBuilder {
         }
     }
 
-    assignDataManyToOneOrOneToOneOwner() {
+    assignDataManyToOneOrOneToOne() {
         for (let entity of this.entities) {
             entity[this.relationName] = this.results.find((result) => {
                 for (let column of this.relation.joinColumns) {
@@ -71,7 +71,7 @@ export class RelationQueryBuilder {
         }
     }
 
-    assignOneToManyOrOneToOneNotOwner() {
+    assignOneToMany() {
         for (let entity of this.entities) {
             entity[this.relationName] = this.results.filter((result) => {
                 for (let column of this.inverseRelation.joinColumns) {
