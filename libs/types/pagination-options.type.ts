@@ -1,2 +1,1 @@
-export type PaginationOptions = { page?: number; perPage?: number }
-
+export type PaginationOptions = { page?: number; perPage?: number };

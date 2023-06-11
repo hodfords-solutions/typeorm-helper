@@ -6,17 +6,30 @@ export function getEntities(entities) {
     return Array.isArray(entities) ? entities : [entities];
 }
 
+export function getEntitiesByPaths(entities: any[], relationPaths: string[], index: number = 0) {
+    let childEntities = [];
+    for (let entity of entities) {
+        let childEntity = get(entity, relationPaths[index]);
+        if (!childEntity) {
+            continue;
+        }
+        if (Array.isArray(childEntity)) {
+            if (childEntity.length) {
+                childEntities = childEntities.concat(childEntity);
+            }
+        } else {
+            childEntities.push(childEntity);
+        }
+    }
+    if (index < relationPaths.length - 1) {
+        return getEntitiesByPaths(childEntities, relationPaths, index + 1);
+    }
+    return childEntities;
+}
+
 export function getChildEntitiesAndRelationName(entities: any[], relationName: string) {
     let relationPaths = relationName.split('.');
-    let relationPath = relationPaths.slice(0, -1).join('.');
-    let childEntities = entities
-        .map((entity) => get(entity, relationPath))
-        .filter((value) => {
-            if (!value) {
-                return false;
-            }
-            return Array.isArray(value) ? value.length : true;
-        });
+    let childEntities = getEntitiesByPaths(entities, relationPaths.slice(0, -1));
     let newEntities = [];
     for (let entity of childEntities) {
         if (Array.isArray(entity)) {
@@ -31,21 +44,21 @@ export function getChildEntitiesAndRelationName(entities: any[], relationName: s
     };
 }
 
-export function groupRelationName(relationNames: RelationParams): Dictionary<RelationGroupType[]>{
+export function groupRelationName(relationNames: RelationParams): Dictionary<RelationGroupType[]> {
     let relations: RelationGroupType[] = [];
-    for (let relationName of relationNames){
+    for (let relationName of relationNames) {
         if (typeof relationName === 'string') {
             relations.push({
                 level: relationName.split('.').length,
                 name: relationName
-            })
+            });
         } else {
             let key = Object.keys(relationName)[0];
             relations.push({
                 level: key.split('.').length,
                 name: key,
                 customQuery: relationName[key]
-            })
+            });
         }
     }
     return groupBy(orderBy(relations, 'level'), 'level');
