@@ -168,7 +168,7 @@ export class RelationQueryBuilder {
 
     private applyQueryBuilder(queryBuilder: SelectQueryBuilder<any>) {
         if (this.customQueries?.length) {
-            for (let customQuery of this.customQueries){
+            for (let customQuery of this.customQueries) {
                 customQuery(queryBuilder);
             }
         }
