@@ -22,8 +22,13 @@ createConnection()
         // await loadRelations(users[0].posts, 'categories');
         // let posts = concat(...users.map((users) => get(users, 'posts')));
         // console.log(concat(...users.map((users) => get(users, 'posts'))));
-        await loadRelations(users, ['posts.user', 'posts', 'posts.categories', 'posts.user.latestPost']);
-        console.log(users[0].posts[0].user.latestPost);
+        await loadRelations(users, ['posts.user', 'latestPost', 'posts', 'posts.categories', 'posts.user.latestPost']);
+        // await loadRelations(users, ['posts.user', 'latestPost', 'posts', 'posts.categories', 'posts.user.latestPost']);
+        console.log(users[0].posts[0].user);
+        console.log(users[1].posts[0].user);
+            console.log(users[0]);
+            console.log(users[1]);
+
         // await users.loadRelation('posts.categories', ['id', 'userId']);
         // console.log(users);
         // let categories = await Category.createQueryBuilder().limit(2).getMany();
