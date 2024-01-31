@@ -1,5 +1,5 @@
-import { TableColumnOptions } from 'typeorm/schema-builder/options/TableColumnOptions';
 import { TableColumn } from 'typeorm';
+import { TableColumnOptions } from 'typeorm/schema-builder/options/TableColumnOptions';
 import { BaseColumn } from './base.column';
 
 export class BaseTable {
