@@ -1,5 +1,5 @@
-import { FindOperator, Raw } from 'typeorm';
 import { randomBytes } from 'crypto';
+import { FindOperator, Raw } from 'typeorm';
 
 function arrayFindRaw(value, operator: string, type: string) {
     let param = `rawArrayParam${randomBytes(16).toString('hex')}`;

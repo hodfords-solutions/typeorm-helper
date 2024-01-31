@@ -1,8 +1,8 @@
-import { SelectQueryBuilder } from 'typeorm';
-import { BaseQuery } from './base.query';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { QueryInterface } from '../interfaces/query.interface';
+import { BaseQuery } from './base.query';
 
-export class CollectionQuery<Entity> extends BaseQuery<Entity> {
+export class CollectionQuery<Entity extends ObjectLiteral> extends BaseQuery<Entity> {
     public constructor(private queries: QueryInterface<Entity>[]) {
         super();
     }

@@ -1,26 +1,28 @@
 import {
     DeepPartial,
     EntityNotFoundError,
-    FindConditions,
     FindManyOptions,
-    getConnection,
-    ObjectID,
+    FindOneOptions,
+    FindOptionsWhere,
     ObjectLiteral,
     Repository,
     SelectQueryBuilder,
     UpdateResult
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { FindOneOptions } from 'typeorm/browser';
-import { ObjectType } from 'typeorm/common/ObjectType';
-import { PaginationCollection } from '../collections/pagination.collection';
 import { EntityCollection } from '../collections/entity.collection';
+import { PaginationCollection } from '../collections/pagination.collection';
+import { getDataSource } from '../containers/data-source-container';
+import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator';
 import { BaseQuery } from '../queries/base.query';
 import { PaginationOptions } from '../types/pagination-options.type';
 
 export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
-    static make<T>(this: ObjectType<T>): T {
-        return getConnection().getCustomRepository(this) as any;
+    static make<T>(this: new (...args: any[]) => T): T {
+        const entity = Reflect.getMetadata(TYPEORM_EX_CUSTOM_REPOSITORY, this);
+        const baseRepository = getDataSource().getRepository(entity);
+
+        return new this(baseRepository.target, baseRepository.manager, baseRepository.queryRunner);
     }
 
     async createOne(entity: QueryDeepPartialEntity<Entity>) {
@@ -32,11 +34,16 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         if (!id) {
             throw new Error('Id can not null');
         }
-        return await super.findOneOrFail(id, options);
+        return await super.findOneOrFail({
+            where: {
+                id
+            } as any,
+            ...options
+        });
     }
 
     async pagination(
-        options: FindManyOptions<Entity> | FindConditions<Entity> | SelectQueryBuilder<Entity> | BaseQuery<Entity>,
+        options: FindManyOptions<Entity> | FindOptionsWhere<Entity> | SelectQueryBuilder<Entity> | BaseQuery<Entity>,
         paginationParams: PaginationOptions
     ) {
         let page = paginationParams.page || 1;
@@ -100,131 +107,44 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     private async applyQueryBuilder(query: BaseQuery<Entity>) {
         let queryBuilder = this.createQueryBuilder(query.alias());
         await query.query(queryBuilder);
-        await query.order(queryBuilder);
+        query.order(queryBuilder);
         return queryBuilder;
     }
 
-    find(options?: FindManyOptions<Entity> | BaseQuery<Entity>): Promise<EntityCollection<Entity>>;
-
-    find(conditions?: FindConditions<Entity> | BaseQuery<Entity>): Promise<EntityCollection<Entity>>;
-
-    async find(
-        optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity> | BaseQuery<Entity>
-    ): Promise<EntityCollection<Entity>> {
-        if (optionsOrConditions instanceof BaseQuery) {
-            return (await this.applyQueryBuilder(optionsOrConditions)).getMany();
+    async find(options?: FindManyOptions<Entity> | BaseQuery<Entity>): Promise<EntityCollection<Entity>> {
+        if (options instanceof BaseQuery) {
+            return (await this.applyQueryBuilder(options)).getMany();
         }
-        return (await super.find(optionsOrConditions)) as any;
+        return (await super.find(options)) as any;
     }
 
-    findOne(
-        id?: string | number | Date | ObjectID,
-        options?: FindOneOptions<Entity> | BaseQuery<Entity>
-    ): Promise<Entity | undefined>;
-
-    findOne(options?: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<Entity | undefined>;
-
-    findOne(
-        conditions?: FindConditions<Entity> | BaseQuery<Entity>,
-        options?: FindOneOptions<Entity>
-    ): Promise<Entity | undefined>;
-
-    async findOne(
-        optionsOrConditions?:
-            | string
-            | number
-            | Date
-            | ObjectID
-            | FindOneOptions<Entity>
-            | FindConditions<Entity>
-            | BaseQuery<Entity>,
-        maybeOptions?: FindOneOptions<Entity>
-    ): Promise<Entity | undefined> {
-        if (optionsOrConditions instanceof BaseQuery) {
-            return (await this.applyQueryBuilder(optionsOrConditions)).limit(1).getOne();
-        }
-        return (await super.findOne(optionsOrConditions, maybeOptions)) as any;
-    }
-
-    findOneOrFail(id?: string | number | Date | ObjectID, options?: FindOneOptions<Entity>): Promise<Entity>;
-
-    findOneOrFail(options?: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<Entity>;
-
-    findOneOrFail(
-        conditions?: FindConditions<Entity> | BaseQuery<Entity>,
-        options?: FindOneOptions<Entity>
-    ): Promise<Entity>;
-
-    async findOneOrFail(
-        optionsOrConditions?:
-            | string
-            | number
-            | Date
-            | ObjectID
-            | FindOneOptions<Entity>
-            | FindConditions<Entity>
-            | BaseQuery<Entity>,
-        maybeOptions?: FindOneOptions<Entity>
-    ): Promise<Entity> {
-        if (optionsOrConditions instanceof BaseQuery) {
-            return (await this.applyQueryBuilder(optionsOrConditions)).limit(1).getOneOrFail();
+    async findOne(options: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<Entity | null> {
+        if (options instanceof BaseQuery) {
+            return (await this.applyQueryBuilder(options)).limit(1).getOne();
         }
 
-        return (await super.findOneOrFail(optionsOrConditions, maybeOptions)) as any;
+        return (await super.findOne(options)) as any;
     }
 
-    findOneAndReturnId(
-        id?: string | number | Date | ObjectID,
-        options?: FindOneOptions<Entity> | BaseQuery<Entity>
-    ): Promise<string>;
-
-    findOneAndReturnId(options?: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<string>;
-
-    findOneAndReturnId(
-        conditions?: FindConditions<Entity> | BaseQuery<Entity>,
-        options?: FindOneOptions<Entity>
-    ): Promise<string>;
-
-    async findOneAndReturnId(
-        optionsOrConditions?:
-            | string
-            | number
-            | Date
-            | ObjectID
-            | FindOneOptions<Entity>
-            | FindConditions<Entity>
-            | BaseQuery<Entity>,
-        maybeOptions?: FindOneOptions<Entity>
-    ): Promise<string> {
-        if (optionsOrConditions instanceof BaseQuery) {
-            return (
-                (await (await this.applyQueryBuilder(optionsOrConditions)).select('id').limit(1).getOne()) as Entity
-            ).id;
+    async findOneOrFail(options: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<Entity> {
+        if (options instanceof BaseQuery) {
+            return (await this.applyQueryBuilder(options)).limit(1).getOneOrFail();
         }
-        return ((await super.findOneOrFail(optionsOrConditions, { ...maybeOptions, select: ['id'] })) as Entity).id;
+
+        return (await super.findOneOrFail(options)) as any;
     }
-
-    findAndCount(options?: FindManyOptions<Entity>): Promise<[EntityCollection<Entity>, number]>;
-
-    findAndCount(conditions?: FindConditions<Entity> | BaseQuery<Entity>): Promise<[EntityCollection<Entity>, number]>;
 
     async findAndCount(
-        optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity> | BaseQuery<Entity>
+        options?: FindManyOptions<Entity> | BaseQuery<Entity>
     ): Promise<[EntityCollection<Entity>, number]> {
-        if (optionsOrConditions instanceof BaseQuery) {
-            return (await this.applyQueryBuilder(optionsOrConditions)).getManyAndCount();
+        if (options instanceof BaseQuery) {
+            return (await this.applyQueryBuilder(options)).getManyAndCount();
         }
 
-        return (await super.findAndCount(optionsOrConditions)) as any;
+        return (await super.findAndCount(options)) as any;
     }
 
-    count(options?: FindManyOptions<Entity> | BaseQuery<Entity>): Promise<number>;
-
-    count(conditions?: FindConditions<Entity> | BaseQuery<Entity>): Promise<number>;
-
-    async count(
-        optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity> | BaseQuery<Entity>
-    ): Promise<number> {
+    async count(optionsOrConditions?: FindManyOptions<Entity> | BaseQuery<Entity>): Promise<number> {
         if (optionsOrConditions instanceof BaseQuery) {
             return (await this.applyQueryBuilder(optionsOrConditions)).getCount();
         }
@@ -234,8 +154,8 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     /**
      * Must use this method inside transaction for deleting multiple entities
      */
-    async deleteOrFail(criteria: FindConditions<Entity>) {
-        const recordCount = await this.count(criteria);
+    async deleteOrFail(criteria: FindOptionsWhere<Entity>) {
+        const recordCount = await this.count({ where: criteria });
         const queryResult = await this.delete(criteria);
 
         if (queryResult.affected === 0 || queryResult.affected !== recordCount) {
@@ -248,8 +168,8 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     /**
      * Must use this method inside transaction for soft deleting multiple entities
      */
-    async softDeleteOrFail(criteria: FindConditions<Entity>) {
-        const recordCount = await this.count(criteria);
+    async softDeleteOrFail(criteria: FindOptionsWhere<Entity>) {
+        const recordCount = await this.count({ where: criteria });
         const queryResult = await this.softDelete(criteria);
 
         if (queryResult.affected === 0 || queryResult.affected !== recordCount) {
@@ -262,8 +182,8 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     /**
      * Must use this method inside transaction for update multiple entities
      */
-    async updateOrFail(criteria: FindConditions<Entity>, partialEntity: DeepPartial<Entity>): Promise<UpdateResult> {
-        const recordCount = await this.count(criteria);
+    async updateOrFail(criteria: FindOptionsWhere<Entity>, partialEntity: DeepPartial<Entity>): Promise<UpdateResult> {
+        const recordCount = await this.count({ where: criteria });
         const queryResult = await this.update(criteria, partialEntity);
 
         if (queryResult.affected === 0 || queryResult.affected !== recordCount) {
@@ -273,11 +193,21 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         return queryResult;
     }
 
-    async existOrFail(criteria: string | FindConditions<Entity>): Promise<boolean> {
-        return Boolean(await this.findOneOrFail(criteria, { select: ['id'] }));
+    async existOrFail(criteria: FindOptionsWhere<Entity>): Promise<boolean> {
+        return Boolean(
+            await this.findOneOrFail({
+                where: criteria,
+                select: {
+                    id: true
+                } as any
+            })
+        );
     }
 
-    async exists(conditions?: FindConditions<Entity> | BaseQuery<Entity>) {
-        return Boolean(await this.findOne(conditions, { select: ['id'] }));
+    async exists(conditions?: FindOptionsWhere<Entity> | BaseQuery<Entity>) {
+        if (conditions instanceof BaseQuery) {
+            return Boolean(await this.findOne(conditions));
+        }
+        return Boolean(await this.findOne({ where: conditions }));
     }
 }
