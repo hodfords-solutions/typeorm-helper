@@ -1,10 +1,9 @@
-import { RelationQueryBuilder } from './query-builders/relation.query-builder';
-import { SelectQueryBuilder } from 'typeorm';
-import { WhereExpressionInterface } from './interfaces/where-expression.interface';
-import { CollectionWhereExpression } from './where-expression/collection.where-expression';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { QueryInterface } from './interfaces/query.interface';
+import { WhereExpressionInterface } from './interfaces/where-expression.interface';
 import { CollectionQuery } from './queries/collection.query';
-import { getChildEntitiesAndRelationName, getEntities, groupRelationName } from './helpers/relation.helper';
+import { RelationQueryBuilder } from './query-builders/relation.query-builder';
+import { CollectionWhereExpression } from './where-expression/collection.where-expression';
 
 export type RelationParams =
     | string
@@ -15,34 +14,25 @@ export async function loadRelations(entities, relationNames: RelationParams, col
     if (!entities) {
         return;
     }
-    entities = getEntities(entities);
+    entities = Array.isArray(entities) ? entities : [entities];
     if (!entities.length) {
         return;
     }
     if (typeof relationNames === 'string') {
         await loadRelation(entities, relationNames, columns);
     } else {
-        let relationGroups = groupRelationName(relationNames);
-        for (let [level, relations] of Object.entries(relationGroups)) {
-            await Promise.all(
-                relations.map(async (relation) => {
-                    await loadRelation(entities, relation.name, columns, relation.customQuery);
-                })
-            );
+        for (let relationName of relationNames) {
+            if (typeof relationName === 'string') {
+                await loadRelation(entities, relationName, columns);
+            } else {
+                let key = Object.keys(relationName)[0];
+                await loadRelation(entities, key, columns, relationName[key]);
+            }
         }
     }
 }
 
 async function loadRelation(entities, relationName: string, columns?: string[], customQuery = null) {
-    entities = getEntities(entities);
-    if (relationName.includes('.')) {
-        let childEntity = getChildEntitiesAndRelationName(entities, relationName);
-        entities = childEntity.entities;
-        relationName = childEntity.relationName;
-        if (!entities.length) {
-            return;
-        }
-    }
     let relationQueryBuilder = await new RelationQueryBuilder(entities, relationName);
     if (customQuery) {
         relationQueryBuilder.addCustomQuery(customQuery);
@@ -60,6 +50,6 @@ export function collectExpression(whereExpressions: WhereExpressionInterface[]) 
     return new CollectionWhereExpression(whereExpressions);
 }
 
-export function collectQuery<Entity>(queries: QueryInterface<Entity>[]) {
+export function collectQuery<Entity extends ObjectLiteral>(queries: QueryInterface<Entity>[]) {
     return new CollectionQuery(queries);
 }

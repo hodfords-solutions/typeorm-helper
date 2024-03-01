@@ -1,6 +1,6 @@
-import { SelectQueryBuilder, WhereExpression } from 'typeorm';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
-export interface QueryInterface<Entity> {
+export interface QueryInterface<Entity extends ObjectLiteral> {
     query(query: SelectQueryBuilder<Entity>);
 
     order?(query: SelectQueryBuilder<Entity>): void;

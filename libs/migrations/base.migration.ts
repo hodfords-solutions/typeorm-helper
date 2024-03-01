@@ -1,5 +1,5 @@
-import { BaseTable } from './base.table';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { BaseTable } from './base.table';
 
 export abstract class BaseMigration implements MigrationInterface {
     private queryRunner: QueryRunner = null;
