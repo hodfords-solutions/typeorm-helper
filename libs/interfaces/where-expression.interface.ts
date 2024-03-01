@@ -1,5 +1,5 @@
-import { WhereExpression } from 'typeorm';
+import { WhereExpressionBuilder } from 'typeorm';
 
 export interface WhereExpressionInterface {
-    where(query: WhereExpression);
+    where(query: WhereExpressionBuilder);
 }

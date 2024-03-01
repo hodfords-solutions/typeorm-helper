@@ -1,8 +1,5 @@
 import { createConnection, getConnectionOptions } from 'typeorm';
 import { User } from './entity/User';
-import { createCategories, createPosts, createUsers } from '../tests/test-helper';
-import { loadRelations } from '../libs';
-import { concat, get } from 'lodash';
 
 // connection settings are in the "ormconfig.json" file
 createConnection()
@@ -17,19 +14,8 @@ createConnection()
         // console.log(a);
         let users = await User.createQueryBuilder().limit(3).getMany();
         // await users.loadRelation(['latestPost', 'posts']);
-        // await users.loadRelation('posts', ['id', 'userId']);
-        // await users.loadRelation(['posts', 'posts.categories']);
-        // await loadRelations(users[0].posts, 'categories');
-        // let posts = concat(...users.map((users) => get(users, 'posts')));
-        // console.log(concat(...users.map((users) => get(users, 'posts'))));
-        await loadRelations(users, ['posts.user', 'latestPost', 'posts', 'posts.categories', 'posts.user.latestPost']);
-        // await loadRelations(users, ['posts.user', 'latestPost', 'posts', 'posts.categories', 'posts.user.latestPost']);
-        console.log(users[0].posts[0].user);
-        console.log(users[1].posts[0].user);
-            console.log(users[0]);
-            console.log(users[1]);
-
-        // await users.loadRelation('posts.categories', ['id', 'userId']);
+        await users.loadRelation('posts', ['id', 'userId']);
+        console.log(users);
         // console.log(users);
         // let categories = await Category.createQueryBuilder().limit(2).getMany();
         // await categories.loadRelation('posts');

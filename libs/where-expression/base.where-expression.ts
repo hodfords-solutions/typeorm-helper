@@ -1,4 +1,4 @@
-import { Brackets, WhereExpression } from 'typeorm';
+import { Brackets, WhereExpressionBuilder } from 'typeorm';
 import { WhereExpressionInterface } from '../interfaces/where-expression.interface';
 
 export abstract class BaseWhereExpression extends Brackets implements WhereExpressionInterface {
@@ -6,5 +6,5 @@ export abstract class BaseWhereExpression extends Brackets implements WhereExpre
         super((query) => this.where(query));
     }
 
-    abstract where(query: WhereExpression);
+    abstract where(query: WhereExpressionBuilder);
 }

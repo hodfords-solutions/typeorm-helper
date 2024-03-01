@@ -2,7 +2,7 @@ import { getMetadataArgsStorage, SelectQueryBuilder } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { EntityCollection } from '../collections/entity.collection';
 
-export function RelationCondition<T>(
+export function RelationCondition(
     query: (query: SelectQueryBuilder<any>, entities: any[]) => void,
     map?: (entity, result, column: ColumnMetadata) => boolean
 ): PropertyDecorator {
