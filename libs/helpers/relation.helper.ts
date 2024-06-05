@@ -1,6 +1,12 @@
 import { concat, Dictionary, get, groupBy, last, orderBy } from 'lodash';
 import { RelationParams } from '../helper';
-import { RelationGroupType } from 'libs/types/relation-group.type';
+import { SelectQueryBuilder } from 'typeorm';
+
+export type RelationGroupType = {
+    level: number;
+    name: string;
+    customQuery?: (name: SelectQueryBuilder<any>) => void;
+};
 
 export function getEntities(entities) {
     return Array.isArray(entities) ? entities : [entities];
