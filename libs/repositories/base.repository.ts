@@ -1,5 +1,4 @@
 import {
-    DeepPartial,
     EntityNotFoundError,
     FindManyOptions,
     FindOneOptions,
@@ -182,7 +181,10 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     /**
      * Must use this method inside transaction for update multiple entities
      */
-    async updateOrFail(criteria: FindOptionsWhere<Entity>, partialEntity: DeepPartial<Entity>): Promise<UpdateResult> {
+    async updateOrFail(
+        criteria: FindOptionsWhere<Entity>,
+        partialEntity: QueryDeepPartialEntity<Entity>
+    ): Promise<UpdateResult> {
         const recordCount = await this.count({ where: criteria });
         const queryResult = await this.update(criteria, partialEntity);
 
@@ -202,12 +204,5 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
                 } as any
             })
         );
-    }
-
-    async exists(conditions?: FindOptionsWhere<Entity> | BaseQuery<Entity>) {
-        if (conditions instanceof BaseQuery) {
-            return Boolean(await this.findOne(conditions));
-        }
-        return Boolean(await this.findOne({ where: conditions }));
     }
 }
