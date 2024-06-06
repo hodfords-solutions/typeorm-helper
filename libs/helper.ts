@@ -1,5 +1,5 @@
 import { RelationQueryBuilder } from './query-builders/relation.query-builder';
-import { SelectQueryBuilder } from 'typeorm';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { WhereExpressionInterface } from './interfaces/where-expression.interface';
 import { CollectionWhereExpression } from './where-expression/collection.where-expression';
 import { QueryInterface } from './interfaces/query.interface';
@@ -59,6 +59,6 @@ export function collectExpression(whereExpressions: WhereExpressionInterface[]) 
     return new CollectionWhereExpression(whereExpressions);
 }
 
-export function collectQuery<Entity>(queries: QueryInterface<Entity>[]) {
+export function collectQuery<Entity extends ObjectLiteral>(queries: QueryInterface<Entity>[]) {
     return new CollectionQuery(queries);
 }
