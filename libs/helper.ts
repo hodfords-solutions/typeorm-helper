@@ -22,7 +22,7 @@ export async function loadRelations(entities, relationNames: RelationParams, col
         await loadRelation(entities, relationNames, columns);
     } else {
         let relationGroups = groupRelationName(relationNames);
-        for (const relations of relationGroups) {
+        for (const relations of Object.values(relationGroups)) {
             await Promise.all(
                 relations.map(async (relation) => {
                     await loadRelation(entities, relation.name, columns, relation.customQuery);

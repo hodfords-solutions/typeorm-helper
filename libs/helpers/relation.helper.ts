@@ -1,4 +1,4 @@
-import { concat, Dictionary, get, groupBy, last, orderBy } from 'lodash';
+import { concat, get, groupBy, last, orderBy } from 'lodash';
 import { RelationParams } from '../helper';
 import { SelectQueryBuilder } from 'typeorm';
 
@@ -37,7 +37,7 @@ export function getChildEntitiesAndRelationName(entities: any[], relationName: s
     };
 }
 
-export function groupRelationName(relationNames: RelationParams): Dictionary<RelationGroupType[]> {
+export function groupRelationName(relationNames: RelationParams): Record<string, RelationGroupType[]> {
     let relations: RelationGroupType[] = [];
     for (let relationName of relationNames) {
         if (typeof relationName === 'string') {
