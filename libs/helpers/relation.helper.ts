@@ -12,17 +12,30 @@ export function getEntities(entities) {
     return Array.isArray(entities) ? entities : [entities];
 }
 
+export function getEntitiesByPaths(entities: any[], relationPaths: string[], index: number = 0) {
+    let childEntities = [];
+    for (let entity of entities) {
+        let childEntity = get(entity, relationPaths[index]);
+        if (!childEntity) {
+            continue;
+        }
+        if (Array.isArray(childEntity)) {
+            if (childEntity.length) {
+                childEntities = childEntities.concat(childEntity);
+            }
+        } else {
+            childEntities.push(childEntity);
+        }
+    }
+    if (index < relationPaths.length - 1) {
+        return getEntitiesByPaths(childEntities, relationPaths, index + 1);
+    }
+    return childEntities;
+}
+
 export function getChildEntitiesAndRelationName(entities: any[], relationName: string) {
     let relationPaths = relationName.split('.');
-    let relationPath = relationPaths.slice(0, -1).join('.');
-    let childEntities = entities
-        .map((entity) => get(entity, relationPath))
-        .filter((value) => {
-            if (!value) {
-                return false;
-            }
-            return Array.isArray(value) ? value.length : true;
-        });
+    let childEntities = getEntitiesByPaths(entities, relationPaths.slice(0, -1));
     let newEntities = [];
     for (let entity of childEntities) {
         if (Array.isArray(entity)) {
