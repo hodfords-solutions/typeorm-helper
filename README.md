@@ -1,120 +1,138 @@
-# TYPEORM HELPER
+<p align="center">
+  <a href="http://opensource.hodfords.uk" target="blank"><img src="https://opensource.hodfords.uk/img/logo.svg" width="320" alt="Hodfords Logo" /></a>
+</p>
 
-Provide functions for relational handling in Typeorm.
+<p align="center"> <b>typeorm-helper</b> enhances TypeORM integration in your NestJS projects, streamlining database interactions and management. It offers utilities for easier setup and configuration of TypeORM, simplifies common database operations, and promotes best practices for managing entities and migrations. You can efficiently manage your data layer, ensuring robust and maintainable data access within your application. </p>
 
-## How to use?
+## Installation 🤖
 
-Extend BaseEntity from typeorm-helper
+Install the `typeorm-helper` package with:
 
-```typescript
-export class Post extends BaseEntity {
-}
+```bash
+npm install @hodfords/typeorm-helper --save
 ```
 
-Extend BaseRepository from typeorm-helper
+## Usage 🚀
+
+### Defining custom repositories and entities
+
+When managing different entities, you can define custom repositories and entities. Below is an example for the Category entity and its corresponding repository.
+
+#### Entity
+
+The `Category` table in the database is modeled by the `CategoryEntity`, `typeorm` decorators should be used to define this entity.
 
 ```typescript
-@EntityRepository(Post)
-export class PostRepository extends BaseRepository<Post> {
-}
-```
+import { BaseEntity } from '@hodfords/typeorm-helper';
+import { Column, Entity, ManyToMany, JoinTable, PrimaryGeneratedColumn } from 'typeorm';
 
-## RELATION LOADER
-
-##### Single
-
-```typescript
-let user = await User.createQueryBuilder().getOne();
-await user.loadRelation(['posts', 'roles']);
-```
-
-##### Multiple
-
-```typescript
-let users = await User.createQueryBuilder().find();
-await users.loadRelation({
-    'posts': (query) => {
-        query.where(' orginationId != :orginationId ', { orginationId: 1 })
-    }
-});
-```
-
-##### Pagination
-
-```typescript
-let userRepo = getConnection().getCustomRepository(UserRepository);
-let userPagination = await userRepo.pagination({}, { page: 1, perPage: 10 });
-await userPagination.loadRelation('posts');
-```
-
-## Repository
-
-```typescript
-@EntityRepository(Category)
-export class CategoryRepository extends BaseRepository<Category> {
-}
-```
-
-## Entity
-
-```typescript
-@Entity()
-export class Category extends BaseEntity {
+@Entity('Category')
+export class CategoryEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     name: string;
 
-    @ManyToMany(() => Post, (post) => post.categories)
-    posts: Post[];
-
-    @OneToMany(() => PostCategory, postToCategory => postToCategory.category)
-    public postCategories!: PostCategory[];
+    @ManyToMany(() => PostEntity, (post) => post.categories)
+    @JoinTable({ name: 'PostCategory' })
+    posts: PostEntity[];
 }
 ```
 
-## Relation condition
+#### Repository
 
-##### Simple
+The `CategoryRepository` is a custom repository that handles all database operations related to the `CategoryEntity`. By using the `@CustomRepository` decorator and extending `BaseRepository`, you ensure that your repository has both common CRUD functionality and can be easily customized with entity-specific methods.
 
 ```typescript
-@Entity()
-export class User extends BaseEntity {
+import { CustomRepository, BaseRepository } from '@hodfords/typeorm-helper';
+
+@CustomRepository(CategoryEntity)
+export class CategoryRepository extends BaseRepository<CategoryEntity> {}
+```
+
+### Lazy Relations
+
+Lazy relations allow you to load related entities only when they are needed. This can significantly improve performance by preventing the fetching of unnecessary data upfront.
+
+This functionality supports handling single entity, collection of entities, and paginated collection. Below is an example of how to load a list of posts associated with a specific category.
+
+##### Single entity
+
+```typescript
+const categoryRepo = getDataSource().getCustomRepository(CategoryRepository);
+const category = await categoryRepo.findOne({});
+await category.loadRelation(['posts']);
+```
+
+##### Collection of entities
+
+```typescript
+const categoryRepo = getDataSource().getCustomRepository(CategoryRepository);
+const categories = await categoryRepo.findOne({ name: ILIKE('%football' });
+await this.categories.loadRelations(['posts']);
+```
+
+##### Paginate collection
+
+```typescript
+const categoryRepo = getDataSource().getCustomRepository(CategoryRepository);
+const pagedCategories = await categoryRepo.pagination({}, { page: 1, perPage: 10 });
+await pagedCategories.loadRelation('posts');
+```
+
+You can also make use of the loadRelations function to efficiently load and retrieve related data
+
+```typescript
+await loadRelations(categories, ['posts']);
+```
+
+### Relation Condition
+
+Sometimes, you need to add custom conditions when loading related entities. `typeorm-helper` provides the
+`@RelationCondition` decorator for this purpose.
+
+##### Simple condition
+
+This ensures that the posts relation is only loaded when the condition `posts.id = :postId` is satisfied.
+
+```typescript
+@Entity('User')
+export class UserEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     name: string;
 
-    @RelationCondition(
-        (query: SelectQueryBuilder<any>) => {
-            query.where(' posts.id = :postId', { postId: 1 });
-        }
-    )
-    @OneToMany(() => Post, (post) => post.user, { cascade: true })
-    posts: Post[];
+    @RelationCondition((query: SelectQueryBuilder<any>) => {
+        query.where(' posts.id = :postId', { postId: 1 });
+    })
+    @OneToMany(() => PostEntity, (post) => post.user, { cascade: true })
+    posts: PostEntity[];
 
-    @RelationCondition(
-        (query: SelectQueryBuilder<any>, entities) => {
-            query.orderBy('id', 'DESC');
-            if (entities.length === 1) {
-                query.limit(1);
-            } else {
-                query.andWhere(' "latestPost".id in (select max(id) from "post" "maxPost" where "maxPost"."userId" = "latestPost"."userId")');
-            }
+    @RelationCondition((query: SelectQueryBuilder<any>, entities) => {
+        query.orderBy('id', 'DESC');
+        if (entities.length === 1) {
+            query.limit(1);
+        } else {
+            query.andWhere(
+                ' "latestPost".id in (select max(id) from "post" "maxPost" where "maxPost"."userId" = "latestPost"."userId")'
+            );
         }
-    )
-    @OneToOne(() => Post, (post) => post.user, { cascade: true })
-    latestPost: Post;
+    })
+    @OneToOne(() => PostEntity, (post) => post.user, { cascade: true })
+    latestPost: PostEntity;
 }
 ```
 
-### Map data
+#### Complex condition
+
+Here, the condition applies a limit if only one entity is found, and fetches the latest post for each user if there are multiple entities.
 
 ```typescript
-@Entity()
-export class User extends BaseEntity {
+@Entity('User')
+export class UserEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -126,19 +144,18 @@ export class User extends BaseEntity {
             query.where(' posts.id = :postId', { postId: 1 });
         },
         (entity, result, column) => {
-            if (entity.id === 2) {
-                return false;
-            }
-            return true;
+            return entity.id !== 2;
         }
     )
-    @OneToMany(() => Post, (post) => post.user, { cascade: true })
-    posts: Post[];
+    @OneToMany(() => PostEntity, (post) => post.user, { cascade: true })
+    posts: PostEntity[];
 }
 ```
 
-## WHERE EXPRESSION
->For queries that are complex, need to be reused, or contain a lot of logic. We should use a class to store it.
+### Where Expression
+
+For complex queries that need to be reused or involve a lot of logic, it's best to put them in a class
+
 ```typescript
 export class BelongToUserWhereExpression extends BaseWhereExpression {
     constructor(private userId: number) {
@@ -151,40 +168,40 @@ export class BelongToUserWhereExpression extends BaseWhereExpression {
 }
 ```
 
-Use:
 ```typescript
-this.postRepo.find({
-    where: new BelongToUserWhereExpression(1)
-})
+const posts = await this.postRepo.find({ where: new BelongToUserWhereExpression(1) });
 ```
 
-## Query Builder
->For queries that are complex, need to be reused, or contain a lot of logic. We should use a class to store it.
+### Query Builder
+
+For complex and reusable queries, it's helpful to put the logic inside a class. This makes it easier to manage and reuse the query, resulting in cleaner and more maintainable code.
+
 ```typescript
-export class PostOfUserQuery extends BaseQuery<Post> {
+export class PostOfUserQuery extends BaseQuery<PostEntity> {
     constructor(private userId: number) {
         super();
     }
 
-    query(query: SelectQueryBuilder<Post>) {
-        query.where({ userId: this.userId })
-            .limit(10);
+    query(query: SelectQueryBuilder<PostEntity>) {
+        query.where({ userId: this.userId }).limit(10);
     }
 
-    order(query: SelectQueryBuilder<Post>) {
+    order(query: SelectQueryBuilder<PostEntity>) {
         query.orderBy('id', 'DESC');
     }
 }
 ```
 
 ```typescript
-this.postRepo.find(new PostOfUserQuery(1));
+const posts = await this.postRepo.find(new PostOfUserQuery(1));
 ```
 
-## MIGRATIONS
-> We create a class, which wraps the migration of typeorm, allowing for simpler and more readable. For the update command, let's use pure queries for the time being.
+### Migrations
 
-- Example:
+We develop a class that abstracts the typeorm migration, making it easier to understand. For the update command, let's use pure queries for the time being.
+
+### Example
+
 ```typescript
 export class CreateUserTable1626749239046 extends BaseMigration {
     async run(queryRunner: QueryRunner) {
@@ -205,12 +222,15 @@ export class CreateUserTable1626749239046 extends BaseMigration {
     }
 
     async rollback(queryRunner: QueryRunner) {
-        await this.drop('Fuel');
+        await this.drop('User');
     }
 }
 ```
 
-### Table method
+### Table methods
+
+The Table class provides various methods for defining columns in a database schema
+
 ```typescript
     string(name: string, length?: number, options?: Partial<TableColumnOptions>): BaseColumn;
     strings(name: string, options?: Partial<TableColumnOptions>): BaseColumn;
@@ -231,6 +251,9 @@ export class CreateUserTable1626749239046 extends BaseMigration {
 ```
 
 ### Column method
+
+The BaseColumn class provides methods that define and configure properties for a database column, including length, nullability, uniqueness, indexing, default values, and foreign key relationships.
+
 ```typescript
     length(length: number): this;
     nullable(): this;
@@ -239,3 +262,7 @@ export class CreateUserTable1626749239046 extends BaseMigration {
     default(value: any): this;
     foreign(table: string, column?: string, onDelete?: string, onUpdate?: string): void;
 ```
+
+## License 📝
+
+This project is licensed under the MIT License
