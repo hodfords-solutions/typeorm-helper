@@ -16,20 +16,27 @@ declare module 'typeorm/query-builder/SelectQueryBuilder' {
         getManyAndCount(): Promise<[EntityCollection<Entity>, number]>;
     }
 }
-SelectQueryBuilder.prototype.getManyOrigin = SelectQueryBuilder.prototype.getMany;
-SelectQueryBuilder.prototype.getMany = async function () {
-    const results = await this.getManyOrigin();
-    return new EntityCollection().collect(results);
-};
 
-SelectQueryBuilder.prototype.getRawManyOrigin = SelectQueryBuilder.prototype.getRawMany;
-SelectQueryBuilder.prototype.getRawMany = async function () {
-    const results = await this.getRawManyOrigin();
-    return new EntityCollection().collect(results);
-};
+if (SelectQueryBuilder.prototype.getManyOrigin) {
+    SelectQueryBuilder.prototype.getManyOrigin = SelectQueryBuilder.prototype.getMany;
+    SelectQueryBuilder.prototype.getMany = async function () {
+        const results = await this.getManyOrigin();
+        return new EntityCollection().collect(results);
+    };
+}
 
-SelectQueryBuilder.prototype.getManyAndCountOrigin = SelectQueryBuilder.prototype.getManyAndCount;
-SelectQueryBuilder.prototype.getManyAndCount = async function () {
-    const [results, count] = await this.getManyAndCountOrigin();
-    return [new EntityCollection().collect(results), count] as any;
-};
+if (!SelectQueryBuilder.prototype.getRawManyOrigin) {
+    SelectQueryBuilder.prototype.getRawManyOrigin = SelectQueryBuilder.prototype.getRawMany;
+    SelectQueryBuilder.prototype.getRawMany = async function () {
+        const results = await this.getRawManyOrigin();
+        return new EntityCollection().collect(results);
+    };
+}
+
+if (!SelectQueryBuilder.prototype.getManyAndCountOrigin) {
+    SelectQueryBuilder.prototype.getManyAndCountOrigin = SelectQueryBuilder.prototype.getManyAndCount;
+    SelectQueryBuilder.prototype.getManyAndCount = async function () {
+        const [results, count] = await this.getManyAndCountOrigin();
+        return [new EntityCollection().collect(results), count] as any;
+    };
+}
