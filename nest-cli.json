@@ -1,0 +1,21 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "sample",
+  "projects": {
+    "typeorm-helper": {
+      "type": "library",
+      "root": "lib",
+      "entryFile": "index",
+      "sourceRoot": "lib"
+    }
+  },
+  "compilerOptions": {
+    "webpack": false,
+    "assets": [
+      {
+        "include": "../lib/public/**",
+        "watchAssets": true
+      }
+    ]
+  }
+}

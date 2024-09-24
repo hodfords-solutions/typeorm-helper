@@ -8,9 +8,22 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ES2022",
     "sourceMap": true,
+    "outDir": "dist",
     "baseUrl": "./",
-    "incremental": true
-  }
+    "incremental": true,
+    "paths": {
+      "@hodfords/typeorm-helper": ["lib"]
+    }
+  },
+  "include": [
+    "lib",
+    "sample" 
+  ],
+  "exclude": [
+    "tests",
+    "dist",
+    "node_modules"
+  ]
 }
