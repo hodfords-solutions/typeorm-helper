@@ -1,0 +1,3 @@
+function bootstrap(): void {}
+
+bootstrap();
