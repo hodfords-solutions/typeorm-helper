@@ -1,17 +1,17 @@
 import { createConnection, getConnection, In } from 'typeorm';
-import { Post } from '../src/entity/Post';
-import '../libs';
-import { PostRepository } from '../src/repositories/PostRepository';
+import { PostEntity } from '../sample/entities/post.entity';
+import '../lib';
+import { PostRepository } from '../sample/repositories/post.repository';
 import { createCategories, createPosts, createUsers } from './test-helper';
-import { PostCategory } from '../src/entity/PostCategory';
+import { PostCategoryEntity } from '../sample/entities/post-category.entity';
 
 describe('Test relations many to many', () => {
     beforeAll(async () => {
         await createConnection();
     });
 
-    const testSinglePost = async (post: Post) => {
-        let postCategories = await PostCategory.find({ where: { postId: post.id } });
+    const testSinglePost = async (post: PostEntity) => {
+        let postCategories = await PostCategoryEntity.find({ where: { postId: post.id } });
         expect(post.categories.length).toEqual(postCategories.length);
         for (let category of post.categories) {
             expect(postCategories).toEqual(
@@ -20,13 +20,13 @@ describe('Test relations many to many', () => {
         }
     };
     it('Single', async () => {
-        let post = await Post.findOne();
+        let post = await PostEntity.findOne();
         await post.loadRelation('categories');
         await testSinglePost(post);
     });
 
     it('Multiple', async () => {
-        let posts = await Post.createQueryBuilder().limit(2).orderBy('random()').getMany();
+        let posts = await PostEntity.createQueryBuilder().limit(2).orderBy('random()').getMany();
         await posts.loadRelation('categories');
 
         for (let post of posts) {
@@ -35,7 +35,7 @@ describe('Test relations many to many', () => {
     });
 
     it('Multiple with repository', async () => {
-        let postRepo = Post.getRepository();
+        let postRepo = PostEntity.getRepository();
         let posts = await postRepo.find();
         await posts.loadRelation('categories');
 

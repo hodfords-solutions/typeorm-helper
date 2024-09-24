@@ -1,7 +1,7 @@
 import { createConnection, getConnection } from 'typeorm';
-import { Post } from '../src/entity/Post';
-import '../libs';
-import { PostRepository } from '../src/repositories/PostRepository';
+import { PostEntity } from '../sample/entities/post.entity';
+import '../lib';
+import { PostRepository } from '../sample/repositories/post.repository';
 import { createCategories, createPosts, createUsers } from './test-helper';
 
 describe('Test relations many to one', () => {
@@ -12,13 +12,13 @@ describe('Test relations many to one', () => {
     });
 
     it('Single', async () => {
-        let post = await Post.findOne();
+        let post = await PostEntity.findOne();
         await post.loadRelation('user');
         expect(post.userId).toEqual(post.user.id);
     });
 
     it('Multiple', async () => {
-        let posts = await Post.createQueryBuilder().limit(10).orderBy('random()').getMany();
+        let posts = await PostEntity.createQueryBuilder().limit(10).orderBy('random()').getMany();
         await posts.loadRelation('user');
 
         for (let post of posts) {
@@ -27,7 +27,7 @@ describe('Test relations many to one', () => {
     });
 
     it('Multiple with repository', async () => {
-        let postRepo = Post.getRepository();
+        let postRepo = PostEntity.getRepository();
         let posts = await postRepo.find();
         await posts.loadRelation('user');
 

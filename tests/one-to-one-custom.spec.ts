@@ -1,9 +1,9 @@
 import { createConnection, getConnection } from 'typeorm';
-import '../libs';
-import { User } from '../src/entity/User';
-import { UserRepository } from '../src/repositories/UserRepository';
-import { loadRelations } from '../libs/helper';
-import { Post } from '../src/entity/Post';
+import '../lib';
+import { UserEntity } from '../sample/entities/user.entity';
+import { UserRepository } from '../sample/repositories/user.repository';
+import { loadRelations } from '../lib/helper';
+import { PostEntity } from '../sample/entities/post.entity';
 
 describe('Test relations one to many', () => {
     beforeAll(async () => {
@@ -11,7 +11,7 @@ describe('Test relations one to many', () => {
     });
 
     let checkLatestPostOfUser = async (userId, post) => {
-        let latestPost = await Post.createQueryBuilder()
+        let latestPost = await PostEntity.createQueryBuilder()
             .where('"userId" = :userId ', { userId })
             .orderBy('id', 'DESC')
             .limit(1)
@@ -20,13 +20,13 @@ describe('Test relations one to many', () => {
     };
 
     it('Single', async () => {
-        let user = await User.createQueryBuilder().orderBy('random()').getOne();
+        let user = await UserEntity.createQueryBuilder().orderBy('random()').getOne();
         await user.loadRelation('latestPost');
         await checkLatestPostOfUser(user.id, user.latestPost);
     });
 
     it('Multiple', async () => {
-        let users = await User.createQueryBuilder().limit(10).orderBy('random()').getMany();
+        let users = await UserEntity.createQueryBuilder().limit(10).orderBy('random()').getMany();
         await users.loadRelation('latestPost');
 
         for (let user of users) {
@@ -35,7 +35,7 @@ describe('Test relations one to many', () => {
     });
 
     it('Multiple with repository', async () => {
-        let userRepo = User.getRepository();
+        let userRepo = UserEntity.getRepository();
         let users = await userRepo.find();
         await users.loadRelation('latestPost');
 

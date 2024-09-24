@@ -2,16 +2,18 @@ name: Publish Package to npmjs
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
+  lint:
+    uses: hodfords-solutions/actions/.github/workflows/lint.yaml@main
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: sh scripts/publish.sh
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    uses: hodfords-solutions/actions/.github/workflows/publish.yaml@main
+    with:
+      build_path: dist/lib
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  update-docs:
+    uses: hodfords-solutions/actions/.github/workflows/update-doc.yaml@main
+    needs: build
+    secrets:
+      DOC_SSH_PRIVATE_KEY: ${{ secrets.DOC_SSH_PRIVATE_KEY }}

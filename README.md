@@ -2,7 +2,7 @@
   <a href="http://opensource.hodfords.uk" target="blank"><img src="https://opensource.hodfords.uk/img/logo.svg" width="320" alt="Hodfords Logo" /></a>
 </p>
 
-<p align="center"> <b>typeorm-helper</b> enhances TypeORM integration in your NestJS projects, streamlining database interactions and management. It offers utilities for easier setup and configuration of TypeORM, simplifies common database operations, and promotes best practices for managing entities and migrations. You can efficiently manage your data layer, ensuring robust and maintainable data access within your application. </p>
+<p align="center"> <b>nestjs-validation</b> enhances validation in your NestJS projects by providing a customized `ValidationPipe` that returns custom error messages. This library simplifies error handling by offering localized and user-friendly responses
 
 ## Installation 🤖
 
