@@ -1,8 +1,8 @@
 import { createConnection } from 'typeorm';
-import '../libs';
-import { User } from '../src/entity/User';
-import { PostRepository } from '../src/repositories/PostRepository';
-import { PostOfUserQuery } from '../src/queries/post-of-user.query';
+import '../lib';
+import { UserEntity } from '../sample/entities/user.entity';
+import { PostRepository } from '../sample/repositories/post.repository';
+import { PostOfUserQuery } from '../sample/queries/post-of-user.query';
 
 describe('Test query builder', () => {
     beforeAll(async () => {
@@ -10,7 +10,7 @@ describe('Test query builder', () => {
     });
 
     it('Test post of id', async () => {
-        let user = await User.createQueryBuilder().orderBy('random()').getOne();
+        let user = await UserEntity.createQueryBuilder().orderBy('random()').getOne();
         await user.loadRelation('posts');
 
         let posts = await PostRepository.make().find(new PostOfUserQuery(user.id));

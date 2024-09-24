@@ -1,8 +1,8 @@
 import { createConnection, getConnection } from 'typeorm';
-import '../libs';
-import { User } from '../src/entity/User';
-import { UserRepository } from '../src/repositories/UserRepository';
-import { loadRelations } from '../libs/helper';
+import '../lib';
+import { UserEntity } from '../sample/entities/user.entity';
+import { UserRepository } from '../sample/repositories/user.repository';
+import { loadRelations } from '../lib/helper';
 
 describe('Test relations one to many', () => {
     beforeAll(async () => {
@@ -10,7 +10,7 @@ describe('Test relations one to many', () => {
     });
 
     it('Single', async () => {
-        let user = await User.createQueryBuilder().orderBy('random()').getOne();
+        let user = await UserEntity.createQueryBuilder().orderBy('random()').getOne();
         await user.loadRelation('posts');
         for (let post of user.posts) {
             expect(post.userId).toEqual(user.id);
@@ -18,7 +18,7 @@ describe('Test relations one to many', () => {
     });
 
     it('Multiple', async () => {
-        let users = await User.createQueryBuilder().limit(10).orderBy('random()').getMany();
+        let users = await UserEntity.createQueryBuilder().limit(10).orderBy('random()').getMany();
         await users.loadRelation('posts');
 
         for (let user of users) {
@@ -29,7 +29,7 @@ describe('Test relations one to many', () => {
     });
 
     it('Multiple with repository', async () => {
-        let userRepo = User.getRepository();
+        let userRepo = UserEntity.getRepository();
         let users = await userRepo.find();
         await users.loadRelation('posts');
 

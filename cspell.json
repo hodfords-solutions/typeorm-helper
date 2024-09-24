@@ -1,7 +1,20 @@
 {
     "version": "0.2",
     "language": "en",
-    "words": ["nestjs", "typeorm", "Metadatas", "bytea", "hodfords", "Tien", "ormconfig", "npmjs", "ILIKE"],
+    "words": [
+        "nestjs",
+        "typeorm",
+        "Metadatas",
+        "bytea",
+        "hodfords",
+        "Tien",
+        "ormconfig",
+        "npmjs",
+        "ILIKE",
+        "nextval",
+        "oids",
+        "postbuild"
+    ],
     "flagWords": ["hte"],
     "ignorePaths": ["node_modules", "test", "*.spec.ts", "cspell.json"]
 }
