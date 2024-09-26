@@ -48,14 +48,13 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "start": "ts-node sample/index.ts",
     "build": "tsc",
     "postbuild": "cp package.json dist/lib && cp README.md dist/lib && cp .npmrc dist/lib",
     "deploy": "npm run build && npm publish dist",
     "typeorm": "./node_modules/.bin/typeorm ",
     "format": "prettier --write \"**/*.ts\"",
     "check": "prettier --check \"**/*.ts\"",
-    "test": "jest --passWithNoTests  --testTimeout=450000 ",
+    "test": "jest --passWithNoTests  --testTimeout=450000 --runInBand",
     "cspell": "cspell",
     "prepare": "is-ci || husky",
     "lint": "eslint \"lib/**/*.ts\" \"sample/**/*.ts\" --fix --max-warnings 0",
@@ -76,6 +75,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@hodfords/typeorm-helper(|/.*)$": "<rootDir>/lib/$1"
+    }
   }
 }

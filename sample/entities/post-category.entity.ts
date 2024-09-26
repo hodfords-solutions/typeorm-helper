@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { BaseEntity } from '../../lib';
 import { PostEntity } from './post.entity';
 import { CategoryEntity } from './category.entity';
+import { BaseEntity } from '@hodfords/typeorm-helper';
 
 @Entity('PostCategory')
 export class PostCategoryEntity extends BaseEntity {
@@ -15,8 +15,8 @@ export class PostCategoryEntity extends BaseEntity {
     categoryId: number;
 
     @ManyToOne(() => PostEntity, (post) => post.postCategories)
-    public post!: PostEntity;
+    post: PostEntity;
 
     @ManyToOne(() => CategoryEntity, (category) => category.postCategories)
-    public category!: CategoryEntity;
+    category: CategoryEntity;
 }
