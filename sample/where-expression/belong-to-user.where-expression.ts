@@ -1,12 +1,12 @@
-import { BaseWhereExpression } from '../../lib';
-import { WhereExpression } from 'typeorm';
+import { BaseWhereExpression } from '@hodfords/typeorm-helper';
+import { WhereExpressionBuilder } from 'typeorm';
 
 export class BelongToUserWhereExpression extends BaseWhereExpression {
     constructor(private userId: number) {
         super();
     }
 
-    where(query: WhereExpression) {
+    where(query: WhereExpressionBuilder) {
         query.where({ userId: this.userId });
     }
 }

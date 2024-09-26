@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { BaseEntity } from '../../lib';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PostEntity } from './post.entity';
 import { PostCategoryEntity } from './post-category.entity';
+import { BaseEntity } from '@hodfords/typeorm-helper';
 
 @Entity('Category')
 export class CategoryEntity extends BaseEntity {
@@ -11,9 +11,10 @@ export class CategoryEntity extends BaseEntity {
     @Column()
     name: string;
 
-    @ManyToMany(() => PostEntity, (post) => post.categories)
+    @ManyToMany(() => PostEntity, (post) => post.categories, { createForeignKeyConstraints: false })
+    @JoinTable({ name: 'postCategories' })
     posts: PostEntity[];
 
     @OneToMany(() => PostCategoryEntity, (postToCategory) => postToCategory.category)
-    public postCategories!: PostCategoryEntity[];
+    postCategories: PostCategoryEntity[];
 }

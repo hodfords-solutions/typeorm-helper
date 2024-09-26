@@ -19,10 +19,10 @@
   },
   "include": [
     "lib",
-    "sample" 
+    "sample",
+    "tests"
   ],
   "exclude": [
-    "tests",
     "dist",
     "node_modules"
   ]

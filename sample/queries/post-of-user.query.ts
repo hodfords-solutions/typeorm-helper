@@ -1,5 +1,5 @@
-import { BaseQuery } from '../../lib/queries/base.query';
-import { PostEntity } from '../entities/post.entity';
+import { BaseQuery } from '@hodfords/typeorm-helper';
+import { PostEntity } from 'sample/entities/post.entity';
 import { SelectQueryBuilder } from 'typeorm';
 
 export class PostOfUserQuery extends BaseQuery<PostEntity> {

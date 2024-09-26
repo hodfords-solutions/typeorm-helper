@@ -1,21 +1,20 @@
-import { createConnection } from 'typeorm';
-import '../lib';
-import { UserEntity } from '../sample/entities/user.entity';
 import { PostRepository } from '../sample/repositories/post.repository';
 import { PostOfUserQuery } from '../sample/queries/post-of-user.query';
+import { initializeTest } from './test-helper';
+import { UserRepository } from '../sample/repositories/user.repository';
+import { IsNull, Not } from 'typeorm';
 
-describe('Test query builder', () => {
+describe('Query Builder Test Cases', () => {
     beforeAll(async () => {
-        await createConnection();
+        await initializeTest();
     });
 
-    it('Test post of id', async () => {
-        let user = await UserEntity.createQueryBuilder().orderBy('random()').getOne();
+    it('should return posts of a specific user by id', async () => {
+        const user = await UserRepository.make().findOneBy({ id: Not(IsNull()) });
         await user.loadRelation('posts');
 
-        let posts = await PostRepository.make().find(new PostOfUserQuery(user.id));
-
-        for (let post of posts) {
+        const posts = await PostRepository.make().find(new PostOfUserQuery(user.id));
+        for (const post of posts) {
             expect(post.userId).toEqual(user.id);
         }
     });
