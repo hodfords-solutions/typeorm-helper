@@ -1,7 +1,6 @@
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, SelectQueryBuilder } from 'typeorm';
 import { PostEntity } from './post.entity';
-import { BaseEntity } from '../../lib';
-import { RelationCondition } from '../../lib/decorators/relation-condition.decorator';
+import { BaseEntity, RelationCondition } from '@hodfords/typeorm-helper';
 
 @Entity('User')
 export class UserEntity extends BaseEntity {
@@ -20,7 +19,7 @@ export class UserEntity extends BaseEntity {
             query.limit(1);
         } else {
             query.andWhere(
-                ' "latestPost".id in (select max(id) from "post" "maxPost" where "maxPost"."userId" = "latestPost"."userId")'
+                ' "latestPost".id in (select max(id) from "Post" "maxPost" where "maxPost"."userId" = "latestPost"."userId")'
             );
         }
     })

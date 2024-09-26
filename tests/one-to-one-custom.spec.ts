@@ -1,17 +1,17 @@
-import { createConnection, getConnection } from 'typeorm';
-import '../lib';
-import { UserEntity } from '../sample/entities/user.entity';
 import { UserRepository } from '../sample/repositories/user.repository';
-import { loadRelations } from '../lib/helper';
 import { PostEntity } from '../sample/entities/post.entity';
+import { initializeTest } from './test-helper';
+import { PostRepository } from '../sample/repositories/post.repository';
+import { IsNull, Not } from 'typeorm';
 
-describe('Test relations one to many', () => {
+describe('One-To-One Relation Test Cases', () => {
     beforeAll(async () => {
-        await createConnection();
+        await initializeTest();
     });
 
-    let checkLatestPostOfUser = async (userId, post) => {
-        let latestPost = await PostEntity.createQueryBuilder()
+    const assertLatestPost = async (userId: number, post: PostEntity) => {
+        const latestPost = await PostRepository.make()
+            .createQueryBuilder()
             .where('"userId" = :userId ', { userId })
             .orderBy('id', 'DESC')
             .limit(1)
@@ -19,48 +19,25 @@ describe('Test relations one to many', () => {
         expect(latestPost.id).toEqual(post.id);
     };
 
-    it('Single', async () => {
-        let user = await UserEntity.createQueryBuilder().orderBy('random()').getOne();
+    it('should validate the latest post for a single user', async () => {
+        const user = await UserRepository.make().findOneBy({ id: Not(IsNull()) });
         await user.loadRelation('latestPost');
-        await checkLatestPostOfUser(user.id, user.latestPost);
+        await assertLatestPost(user.id, user.latestPost);
     });
 
-    it('Multiple', async () => {
-        let users = await UserEntity.createQueryBuilder().limit(10).orderBy('random()').getMany();
+    it('should validate the latest post for multiple users', async () => {
+        const users = await UserRepository.make().find({ take: 5 });
         await users.loadRelation('latestPost');
-
-        for (let user of users) {
-            await checkLatestPostOfUser(user.id, user.latestPost);
+        for (const user of users) {
+            await assertLatestPost(user.id, user.latestPost);
         }
     });
 
-    it('Multiple with repository', async () => {
-        let userRepo = UserEntity.getRepository();
-        let users = await userRepo.find();
-        await users.loadRelation('latestPost');
-
-        for (let user of users) {
-            await checkLatestPostOfUser(user.id, user.latestPost);
-        }
-    });
-
-    it('Multiple with custom Repository', async () => {
-        let userRepo = getConnection().getCustomRepository(UserRepository);
-        let users = await userRepo.find();
-        await users.loadRelation(['latestPost']);
-
-        for (let user of users) {
-            await checkLatestPostOfUser(user.id, user.latestPost);
-        }
-    });
-
-    it('Pagination', async () => {
-        let userRepo = getConnection().getCustomRepository(UserRepository);
-        let userPagination = await userRepo.pagination({}, { page: 1, perPage: 10 });
-        await userPagination.loadRelation('latestPost');
-
-        for (let user of userPagination.items) {
-            await checkLatestPostOfUser(user.id, user.latestPost);
+    it('should validate pagination of users and their latest posts', async () => {
+        const pagination = await UserRepository.make().pagination({}, { page: 1, perPage: 10 });
+        await pagination.loadRelation('latestPost');
+        for (const user of pagination.items) {
+            await assertLatestPost(user.id, user.latestPost);
         }
     });
 });
