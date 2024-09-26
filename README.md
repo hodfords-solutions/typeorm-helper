@@ -2,7 +2,7 @@
   <a href="http://opensource.hodfords.uk" target="blank"><img src="https://opensource.hodfords.uk/img/logo.svg" width="320" alt="Hodfords Logo" /></a>
 </p>
 
-<p align="center"> <b>nestjs-validation</b> enhances validation in your NestJS projects by providing a customized `ValidationPipe` that returns custom error messages. This library simplifies error handling by offering localized and user-friendly responses
+<p align="center"> <b>nestjs-validation</b> enhances validation in your NestJS projects by providing a customized `ValidationPipe` that returns custom error messages. This library simplifies error handling by offering localized and user-friendly responses</p>
 
 ## Installation 🤖
 
