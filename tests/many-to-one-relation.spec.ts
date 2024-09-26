@@ -1,58 +1,36 @@
-import { createConnection, getConnection } from 'typeorm';
-import { PostEntity } from '../sample/entities/post.entity';
-import '../lib';
+import { PostEntity } from 'sample/entities/post.entity';
 import { PostRepository } from '../sample/repositories/post.repository';
-import { createCategories, createPosts, createUsers } from './test-helper';
+import { initializeTest } from './test-helper';
+import { IsNull, Not } from 'typeorm';
 
-describe('Test relations many to one', () => {
+describe('Many-To-One Relation Test Cases', () => {
     beforeAll(async () => {
-        await createConnection();
-        // await createUsers();
-        // await createPosts();
+        await initializeTest();
     });
 
-    it('Single', async () => {
-        let post = await PostEntity.findOne();
-        await post.loadRelation('user');
+    const assertSingle = async (post: PostEntity) => {
         expect(post.userId).toEqual(post.user.id);
+    };
+
+    it('should validate a single post', async () => {
+        const post = await PostRepository.make().findOneBy({ id: Not(IsNull()) });
+        await post.loadRelation('user');
+        assertSingle(post);
     });
 
-    it('Multiple', async () => {
-        let posts = await PostEntity.createQueryBuilder().limit(10).orderBy('random()').getMany();
+    it('should validate multiple posts', async () => {
+        const posts = await PostRepository.make().find({ take: 5 });
         await posts.loadRelation('user');
-
-        for (let post of posts) {
-            expect(post.userId).toEqual(post.user.id);
+        for (const post of posts) {
+            assertSingle(post);
         }
     });
 
-    it('Multiple with repository', async () => {
-        let postRepo = PostEntity.getRepository();
-        let posts = await postRepo.find();
-        await posts.loadRelation('user');
-
-        for (let post of posts) {
-            expect(post.userId).toEqual(post.user.id);
-        }
-    });
-
-    it('Multiple with custom Repository', async () => {
-        let postRepo = getConnection().getCustomRepository(PostRepository);
-        let posts = await postRepo.find();
-        await posts.loadRelation('user');
-
-        for (let post of posts) {
-            expect(post.userId).toEqual(post.user.id);
-        }
-    });
-
-    it('Pagination', async () => {
-        let postRepo = getConnection().getCustomRepository(PostRepository);
-        let postPagination = await postRepo.pagination({}, { page: 1, perPage: 10 });
-        await postPagination.loadRelation('user');
-
-        for (let post of postPagination.items) {
-            expect(post.userId).toEqual(post.user.id);
+    it('should validate post pagination', async () => {
+        const pagination = await PostRepository.make().pagination({}, { page: 1, perPage: 10 });
+        await pagination.loadRelation('user');
+        for (const post of pagination.items) {
+            assertSingle(post);
         }
     });
 });
