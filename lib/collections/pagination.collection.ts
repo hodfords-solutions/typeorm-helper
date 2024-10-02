@@ -1,4 +1,4 @@
-import { RelationParams } from 'lib/helper';
+import { RelationParams } from '../helper';
 import { EntityCollection } from './entity.collection';
 
 export class PaginationCollection<Entity> {
