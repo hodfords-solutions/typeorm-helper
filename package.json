@@ -1,6 +1,6 @@
 {
   "name": "@hodfords/typeorm-helper",
-  "version": "10.1.4",
+  "version": "10.2.0",
   "description": "Simplifies TypeORM usage in NestJS apps",
   "license": "MIT",
   "readmeFilename": "README.md",
@@ -22,6 +22,16 @@
     "typeorm-sample",
     "typeorm-example"
   ],
+  "peerDependencies": {
+    "typeorm": "*",
+    "@nestjs/common": "*",
+    "@nestjs/core": "*",
+    "@nestjs/typeorm": "*",
+    "@types/jest": "*",
+    "@types/node": "*",
+    "pg": "*",
+    "lodash": "*"
+  },
   "devDependencies": {
     "@hodfords/nestjs-eslint-config": "^10.0.4",
     "@hodfords/nestjs-prettier-config": "^10.0.1",
