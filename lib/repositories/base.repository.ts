@@ -3,6 +3,7 @@ import {
     FindManyOptions,
     FindOneOptions,
     FindOptionsWhere,
+    InsertResult,
     ObjectLiteral,
     Repository,
     SelectQueryBuilder,
@@ -24,8 +25,14 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     }
 
     async createOne(entity: QueryDeepPartialEntity<Entity>): Promise<Entity> {
-        const insertResult = await super.insert(entity);
-        return this.findById(insertResult.identifiers[0].id);
+        const result: InsertResult = await this.createQueryBuilder()
+            .insert()
+            .into(this.metadata.target)
+            .values(entity)
+            .returning('*')
+            .execute();
+
+        return result.raw[0] as Entity;
     }
 
     async findById(id: string | number, options?: FindOneOptions<Entity>): Promise<Entity> {
