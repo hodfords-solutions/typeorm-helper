@@ -18,4 +18,24 @@ describe('Query Builder Test Cases', () => {
             expect(post.userId).toEqual(user.id);
         }
     });
+
+    it('should update the user or fail if not found', async () => {
+        const userRepo = UserRepository.make();
+        const user = await userRepo.save({ name: 'Old Name', email: 'test@example.com' });
+    
+        const result = await userRepo.updateOrFail({ id: user.id }, { name: 'New Name' });
+    
+        expect(result.affected).toBe(1);
+    
+        const updatedUser = await userRepo.findOneByOrFail({ id: user.id });
+        expect(updatedUser.name).toBe('New Name');
+    });
+    
+    it('should throw EntityNotFoundError when updating non-existent user', async () => {
+        const userRepo = UserRepository.make();
+        await expect(
+            userRepo.updateOrFail({ id: -1 }, { name: 'No One' }),
+        ).rejects.toThrow('Could not find any entity');
+    });
+    
 });

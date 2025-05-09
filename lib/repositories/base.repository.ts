@@ -1,4 +1,5 @@
 import {
+    EntityManager,
     EntityNotFoundError,
     FindManyOptions,
     FindOneOptions,
@@ -18,6 +19,15 @@ import { BaseQuery } from '../queries/base.query';
 import { PaginationOptions } from '../types/pagination-options.type';
 
 export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
+    async runOnMaster<T>(callback: (manager: EntityManager) => Promise<T>): Promise<T> {
+        const queryRunner = this.manager.connection.createQueryRunner('master');
+        try {
+            return await callback(queryRunner.manager);
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
     static make<T>(this: new (...args: any[]) => T): T {
         const entity = Reflect.getMetadata(TYPEORM_EX_CUSTOM_REPOSITORY, this);
         const baseRepository = getDataSource().getRepository(entity);
@@ -97,8 +107,17 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     }
 
     async firstOrCreate(options: QueryDeepPartialEntity<Entity>) {
-        const item = await super.findOne(options);
-        return item ?? (await this.createOne(options));
+        const item = await this.runOnMaster((manager) =>
+            manager.findOne(this.metadata.target, {
+                where: options as NodeJS.Dict<any>
+            })
+        );
+
+        if (item) {
+            return item;
+        }
+
+        return await this.createOne(options);
     }
 
     private applyQueryBuilder(query: BaseQuery<Entity>): SelectQueryBuilder<Entity> {
@@ -154,13 +173,16 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
      * Must use this method inside transaction for deleting multiple entities
      */
     async deleteOrFail(criteria: FindOptionsWhere<Entity>) {
-        const recordCount = await this.count({ where: criteria });
-        const deleteResult = await this.delete(criteria);
-        if (deleteResult.affected === 0 || deleteResult.affected !== recordCount) {
-            throw new EntityNotFoundError(this.metadata.target, criteria);
-        }
+        return this.runOnMaster(async (manager) => {
+            const recordCount = await manager.count(this.metadata.target, { where: criteria });
+            const deleteResult = await manager.delete(this.metadata.target, criteria);
 
-        return deleteResult;
+            if (deleteResult.affected === 0 || deleteResult.affected !== recordCount) {
+                throw new EntityNotFoundError(this.metadata.target, criteria);
+            }
+
+            return deleteResult;
+        });
     }
 
     /**
@@ -184,14 +206,15 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         criteria: FindOptionsWhere<Entity>,
         partialEntity: QueryDeepPartialEntity<Entity>
     ): Promise<UpdateResult> {
-        const recordCount = await this.count({ where: criteria });
-        const deleteResult = await this.update(criteria, partialEntity);
+        return this.runOnMaster(async (manager) => {
+            const recordCount = await manager.count(this.metadata.target, { where: criteria });
+            const updateResult = await manager.update(this.metadata.target, criteria, partialEntity);
 
-        if (deleteResult.affected === 0 || deleteResult.affected !== recordCount) {
-            throw new EntityNotFoundError(this.metadata.target, criteria);
-        }
-
-        return deleteResult;
+            if (updateResult.affected === 0 || updateResult.affected !== recordCount) {
+                throw new EntityNotFoundError(this.metadata.target, criteria);
+            }
+            return updateResult;
+        });
     }
 
     async existOrFail(criteria: FindOptionsWhere<Entity>): Promise<boolean> {

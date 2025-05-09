@@ -1,6 +1,6 @@
 {
   "name": "@hodfords/typeorm-helper",
-  "version": "11.1.1",
+  "version": "11.1.2",
   "description": "Simplifies TypeORM usage in NestJS apps",
   "license": "MIT",
   "readmeFilename": "README.md",
