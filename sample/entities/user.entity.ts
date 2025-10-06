@@ -1,6 +1,32 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, SelectQueryBuilder } from 'typeorm';
-import { PostEntity } from './post.entity';
 import { BaseEntity, RelationCondition } from '@hodfords/typeorm-helper';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    SelectQueryBuilder,
+    ValueTransformer
+} from 'typeorm';
+import { PostEntity } from './post.entity';
+import { isNumber } from 'lodash';
+
+class TimestampTransformer implements ValueTransformer {
+    to(value: any): Date | number {
+        if (isNumber(value)) {
+            return new Date(value * 1000);
+        }
+        return value;
+    }
+
+    from(value: any): Date | number {
+        if (!value) {
+            return value;
+        }
+        return Math.round(+new Date(value) / 1000);
+    }
+}
 
 @Entity('User')
 export class UserEntity extends BaseEntity {
@@ -25,4 +51,7 @@ export class UserEntity extends BaseEntity {
     })
     @OneToOne(() => PostEntity, (post) => post.user, { cascade: true })
     latestPost: PostEntity;
+
+    @CreateDateColumn({ type: 'timestamp', transformer: new TimestampTransformer() })
+    createdAt: number;
 }

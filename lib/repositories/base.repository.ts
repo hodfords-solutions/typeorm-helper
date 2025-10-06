@@ -15,6 +15,7 @@ import { EntityCollection } from '../collections/entity.collection';
 import { PaginationCollection } from '../collections/pagination.collection';
 import { getDataSource } from '../containers/data-source-container';
 import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator';
+import { applyTransformers } from '../helpers/transformer.helper';
 import { BaseQuery } from '../queries/base.query';
 import { PaginationOptions } from '../types/pagination-options.type';
 
@@ -41,8 +42,10 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
             .values(entity)
             .returning('*')
             .execute();
+        const entityInstance = this.create(result.raw[0]);
+        const transformedEntity = applyTransformers(this.metadata, entityInstance, result.raw[0]);
 
-        return result.raw[0] as Entity;
+        return transformedEntity as any as Entity;
     }
 
     async findById(id: string | number, options?: FindOneOptions<Entity>): Promise<Entity> {
