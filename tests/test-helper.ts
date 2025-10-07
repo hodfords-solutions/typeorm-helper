@@ -14,9 +14,9 @@ export async function initializeTest(): Promise<void> {
         type: 'postgres',
         host: 'localhost',
         port: 5432,
-        username: 'postgres',
-        password: 'postgres',
-        database: 'quickstart',
+        username: 'root',
+        password: 'secret',
+        database: 'quick-start',
         entities: [UserEntity, PostEntity, CategoryEntity, PostCategoryEntity],
         synchronize: true,
         dropSchema: true
@@ -36,7 +36,7 @@ export async function seedEntities(): Promise<void> {
 
 async function seedUsers() {
     for (let i = 0; i < randomInt(15, 30); i++) {
-        await UserRepository.make().createOne({ name: `user_${i}` });
+        await UserRepository.make().createOne({ name: `user_${i}`, amount: randomInt(1000, 10000) });
     }
 }
 
