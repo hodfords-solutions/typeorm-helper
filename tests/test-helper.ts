@@ -36,7 +36,7 @@ export async function seedEntities(): Promise<void> {
 
 async function seedUsers() {
     for (let i = 0; i < randomInt(15, 30); i++) {
-        await UserRepository.make().createOne({ name: `user_${i}`, amount: randomInt(1000, 10000) });
+        await UserRepository.make().createOne({ name: `user_${i}` });
     }
 }
 
