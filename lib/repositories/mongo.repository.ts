@@ -1,11 +1,12 @@
 import { FindManyOptions, FindOptionsWhere, ObjectLiteral } from 'typeorm';
 import { EntityCollection } from '../collections/entity.collection';
+import type { FilterOperators } from 'typeorm/driver/mongodb/typings';
 
 declare module 'typeorm/repository/MongoRepository' {
     interface MongoRepository<Entity extends ObjectLiteral> {
-        find(options?: FindManyOptions<Entity>): Promise<EntityCollection<Entity>>;
-
-        find(conditions?: FindOptionsWhere<Entity>): Promise<EntityCollection<Entity>>;
+        find(
+            options?: FindManyOptions<Entity> | Partial<Entity> | FilterOperators<Entity>
+        ): Promise<EntityCollection<Entity>>;
 
         findAndCount(options?: FindManyOptions<Entity>): Promise<[EntityCollection<Entity>, number]>;
 
