@@ -4,6 +4,7 @@ import {
     FindManyOptions,
     FindOneOptions,
     FindOptionsWhere,
+    In,
     InsertResult,
     ObjectLiteral,
     Repository,
@@ -20,7 +21,7 @@ import { PaginationOptions } from '../types/pagination-options.type';
 
 export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
     async runOnMaster<T>(callback: (manager: EntityManager) => Promise<T>): Promise<T> {
-        const queryRunner = this.manager.connection.createQueryRunner('master');
+        const queryRunner = this.manager.dataSource.createQueryRunner('master');
         try {
             return await callback(queryRunner.manager);
         } finally {
@@ -54,6 +55,16 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
             throw new Error('Id can not null');
         }
         return super.findOneOrFail({ where: { id } as any, ...options });
+    }
+
+    async findByIds(ids: (string | number)[], options?: FindManyOptions<Entity>): Promise<EntityCollection<Entity>> {
+        if (!ids || ids.length === 0) {
+            return [] as EntityCollection<Entity>;
+        }
+        return super.find({
+            where: { id: In(ids) } as any,
+            ...options
+        });
     }
 
     async pagination(

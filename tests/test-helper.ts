@@ -13,10 +13,10 @@ export async function initializeTest(): Promise<void> {
     const options: DataSourceOptions = {
         type: 'postgres',
         host: 'localhost',
-        port: 5432,
-        username: 'root',
-        password: 'secret',
-        database: 'quick-start',
+        port: 9432,
+        username: 'test',
+        password: 'test',
+        database: 'test',
         entities: [UserEntity, PostEntity, CategoryEntity, PostCategoryEntity],
         synchronize: true,
         dropSchema: true

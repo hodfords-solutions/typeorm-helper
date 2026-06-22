@@ -11,13 +11,6 @@ declare module 'typeorm/repository/Repository' {
             options?: FindManyOptions<Entity> | BaseQuery<Entity>
         ): Promise<[EntityCollection<Entity>, number]>;
 
-        findByIds(ids: any[], options?: FindManyOptions<Entity> | BaseQuery<Entity>): Promise<EntityCollection<Entity>>;
-
-        findByIds(
-            ids: any[],
-            conditions?: FindOptionsWhere<Entity> | BaseQuery<Entity>
-        ): Promise<EntityCollection<Entity>>;
-
         findOne(options: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<Entity | null>;
 
         findOneOrFail(options: FindOneOptions<Entity> | BaseQuery<Entity>): Promise<Entity>;

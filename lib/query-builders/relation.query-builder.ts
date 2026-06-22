@@ -18,7 +18,7 @@ export class RelationQueryBuilder {
         private queryRunner?: QueryRunner
     ) {
         if (queryRunner && !queryRunner.isReleased) {
-            this.dataSource = queryRunner.connection;
+            this.dataSource = queryRunner.dataSource;
         } else {
             this.queryRunner = undefined;
             this.dataSource = getDataSource();
