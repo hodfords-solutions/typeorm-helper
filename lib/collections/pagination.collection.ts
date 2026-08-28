@@ -1,5 +1,5 @@
-import { RelationParams } from '../helper';
-import { EntityCollection } from './entity.collection';
+import { RelationParams } from '../helper.js';
+import { EntityCollection } from './entity.collection.js';
 
 export class PaginationCollection<Entity> {
     public items: EntityCollection<Entity>;

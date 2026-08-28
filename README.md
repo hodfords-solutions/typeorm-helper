@@ -12,6 +12,18 @@ Install the `typeorm-helper` package with:
 npm install @hodfords/typeorm-helper --save
 ```
 
+### Requirements
+
+- This package is **ESM-only**. Use `import` syntax; `require()` is not supported.
+- Node.js `>=20.19.0` (or `>=22.12`, `>=24.15`, `>=26`).
+
+### Compatibility
+
+| `@hodfords/typeorm-helper` | NestJS | TypeORM |
+| -------------------------- | ------ | ------- |
+| `12.x`                     | `12.x` | `1.x`   |
+| `11.x`                     | `11.x` | `0.3.x` |
+
 ## Usage 🚀
 
 ### Defining custom repositories and entities

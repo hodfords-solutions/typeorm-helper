@@ -1,29 +1,24 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2022",
-    "sourceMap": true,
-    "outDir": "dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "paths": {
-      "@hodfords/typeorm-helper": ["lib"]
-    }
-  },
-  "include": [
-    "lib",
-    "sample",
-    "tests"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "target": "es2023",
+        "lib": ["es2023"],
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "outDir": "dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "paths": {
+            "@hodfords/typeorm-helper": ["lib/index.ts"]
+        }
+    },
+    "include": ["lib", "sample", "tests"],
+    "exclude": ["dist", "node_modules"]
 }

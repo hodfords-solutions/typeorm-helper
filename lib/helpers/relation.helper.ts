@@ -1,5 +1,9 @@
-import { concat, get, groupBy, last, orderBy } from 'lodash';
-import { RelationParams } from '../helper';
+import concat from 'lodash/concat.js';
+import get from 'lodash/get.js';
+import groupBy from 'lodash/groupBy.js';
+import last from 'lodash/last.js';
+import orderBy from 'lodash/orderBy.js';
+import { RelationParams } from '../helper.js';
 import { SelectQueryBuilder } from 'typeorm';
 
 export type RelationGroupType = {

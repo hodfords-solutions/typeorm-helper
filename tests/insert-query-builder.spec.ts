@@ -1,5 +1,6 @@
-import { UserRepository } from '../sample/repositories/user.repository';
-import { initializeTest } from './test-helper';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { UserRepository } from '../sample/repositories/user.repository.js';
+import { initializeTest } from './test-helper.js';
 
 describe('Insert Query Builder Test Cases', () => {
     beforeAll(async () => {

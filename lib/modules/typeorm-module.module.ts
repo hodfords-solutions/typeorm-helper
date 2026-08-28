@@ -1,10 +1,10 @@
 import { DynamicModule, Provider } from '@nestjs/common';
 import { getDataSourceToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { EntitiesMetadataStorage } from '@nestjs/typeorm/dist/entities-metadata.storage';
+import { EntitiesMetadataStorage } from '@nestjs/typeorm/dist/entities-metadata.storage.js';
 import { DataSource } from 'typeorm';
-import { DEFAULT_DATA_SOURCE_NAME } from '../constants/type.constant';
-import { setDataSource } from '../containers/data-source-container';
-import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator';
+import { DEFAULT_DATA_SOURCE_NAME } from '../constants/type.constant.js';
+import { setDataSource } from '../containers/data-source-container.js';
+import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator.js';
 
 export class TypeOrmHelperModule {
     public static forRoot(config: TypeOrmModuleOptions) {

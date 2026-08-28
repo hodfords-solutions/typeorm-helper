@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { SelectQueryBuilder } from 'typeorm';
-import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
+import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata.js';
 
 export interface RelationConditionInterface {
     target: Function | string;

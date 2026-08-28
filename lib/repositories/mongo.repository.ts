@@ -1,8 +1,8 @@
 import { FindManyOptions, FindOptionsWhere, ObjectLiteral } from 'typeorm';
-import { EntityCollection } from '../collections/entity.collection';
-import type { FilterOperators } from 'typeorm/driver/mongodb/typings';
+import { EntityCollection } from '../collections/entity.collection.js';
+import type { FilterOperators } from 'typeorm/driver/mongodb/typings.js';
 
-declare module 'typeorm/repository/MongoRepository' {
+declare module 'typeorm/repository/MongoRepository.js' {
     interface MongoRepository<Entity extends ObjectLiteral> {
         find(
             options?: FindManyOptions<Entity> | Partial<Entity> | FilterOperators<Entity>

@@ -1,7 +1,8 @@
+import { beforeAll, describe, expect, it } from 'vitest';
 import { IsNull, Not } from 'typeorm';
-import { UserEntity } from '../sample/entities/user.entity';
-import { UserRepository } from '../sample/repositories/user.repository';
-import { initializeTest } from './test-helper';
+import { UserEntity } from '../sample/entities/user.entity.js';
+import { UserRepository } from '../sample/repositories/user.repository.js';
+import { initializeTest } from './test-helper.js';
 
 describe('One-To-Many Relation Test Cases', () => {
     beforeAll(async () => {

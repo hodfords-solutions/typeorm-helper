@@ -4,6 +4,20 @@
     "description": "Simplifies TypeORM usage in NestJS apps",
     "license": "MIT",
     "readmeFilename": "README.md",
+    "type": "module",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts",
+            "import": "./index.js",
+            "default": "./index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "engines": {
+        "node": ">=20.19.0"
+    },
     "author": {
         "name": "Dung Nguyen Tien",
         "email": "nguyentiendung.dev@gmail.com"
@@ -23,11 +37,10 @@
         "typeorm-example"
     ],
     "peerDependencies": {
-        "typeorm": "*",
-        "@nestjs/common": "*",
-        "@nestjs/core": "*",
+        "typeorm": ">=1.0.0",
+        "@nestjs/common": ">=12.0.0",
+        "@nestjs/core": ">=12.0.0",
         "@nestjs/typeorm": "*",
-        "@types/jest": "*",
         "@types/node": "*",
         "pg": "*",
         "lodash": "*"
@@ -35,62 +48,48 @@
     "devDependencies": {
         "@hodfords/nestjs-eslint-config": "11.0.2",
         "@hodfords/nestjs-prettier-config": "11.0.1",
-        "@nestjs/common": "11.1.27",
-        "@nestjs/core": "11.1.27",
+        "@nestjs/common": "12.0.1",
+        "@nestjs/core": "12.0.1",
         "@nestjs/typeorm": "11.0.2",
-        "@types/jest": "30.0.0",
+        "@swc/core": "^1.13.5",
         "@types/node": "25.2.0",
         "cspell": "9.6.3",
         "eslint": "9.39.2",
         "husky": "9.1.7",
         "is-ci": "4.1.0",
-        "jest": "30.2.0",
         "lint-staged": "16.2.7",
         "lodash": "4.18.1",
         "pg": "8.18.0",
         "prettier": "3.8.1",
         "reflect-metadata": "0.2.2",
         "rimraf": "6.1.2",
-        "ts-jest": "29.4.6",
-        "ts-node": "10.9.2",
-        "typeorm": "1.0.0",
-        "typescript": "5.9.3"
+        "typeorm": "1.1.0",
+        "typescript": "5.9.3",
+        "unplugin-swc": "^1.5.7",
+        "vitest": "^4.1.10"
+    },
+    "overrides": {
+        "@nestjs/typeorm": {
+            "@nestjs/common": "$@nestjs/common",
+            "@nestjs/core": "$@nestjs/core",
+            "typeorm": "$typeorm"
+        },
+        "ioredis": "^5.8.2"
     },
     "scripts": {
         "prebuild": "rimraf dist",
-        "build": "tsc",
-        "postbuild": "cp package.json dist/lib && cp README.md dist/lib && cp .npmrc dist/lib",
+        "build": "tsc -p tsconfig.build.json",
+        "postbuild": "cp package.json dist && cp README.md dist && cp .npmrc dist",
         "deploy": "npm run build && npm publish dist",
         "typeorm": "./node_modules/.bin/typeorm ",
         "format": "prettier --write \"**/*.ts\"",
         "check": "prettier --check \"**/*.ts\"",
-        "test": "jest --passWithNoTests  --testTimeout=450000 --runInBand",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:cov": "vitest run --coverage",
         "cspell": "cspell",
         "prepare": "is-ci || husky",
         "lint": "eslint \"lib/**/*.ts\" \"sample/**/*.ts\" --fix --max-warnings 0",
         "lint-staged": "lint-staged"
-    },
-    "jest": {
-        "moduleFileExtensions": [
-            "js",
-            "json",
-            "ts"
-        ],
-        "modulePathIgnorePatterns": [
-            "<rootDir>/dist/"
-        ],
-        "rootDir": ".",
-        "testRegex": ".*\\.spec\\.ts$",
-        "transform": {
-            ".+\\.(t|j)s$": "ts-jest"
-        },
-        "collectCoverageFrom": [
-            "**/*.(t|j)s"
-        ],
-        "coverageDirectory": "../coverage",
-        "testEnvironment": "node",
-        "moduleNameMapper": {
-            "@hodfords/typeorm-helper(|/.*)$": "<rootDir>/lib/$1"
-        }
     }
 }

@@ -1,7 +1,8 @@
-import { PostCategoryEntity } from '../sample/entities/post-category.entity';
-import { CategoryEntity } from '../sample/entities/category.entity';
-import { CategoryRepository } from '../sample/repositories/category.repository';
-import { initializeTest } from './test-helper';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { PostCategoryEntity } from '../sample/entities/post-category.entity.js';
+import { CategoryEntity } from '../sample/entities/category.entity.js';
+import { CategoryRepository } from '../sample/repositories/category.repository.js';
+import { initializeTest } from './test-helper.js';
 import { IsNull, Not } from 'typeorm';
 
 describe('Many-To-Many Relation Not Owner Test Cases', () => {
