@@ -10,7 +10,7 @@ import {
     ValueTransformer
 } from 'typeorm';
 import { PostEntity } from './post.entity.js';
-import isNumber from 'lodash/isNumber.js';
+import { isNumber } from 'es-toolkit';
 
 class TimestampTransformer implements ValueTransformer {
     to(value: any): Date | number {
