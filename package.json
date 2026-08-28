@@ -67,9 +67,6 @@
         "unplugin-swc": "^1.5.7",
         "vitest": "^4.1.10"
     },
-    "overrides": {
-        "ioredis": "^5.8.2"
-    },
     "scripts": {
         "prebuild": "rimraf dist",
         "build": "tsc -p tsconfig.build.json",
