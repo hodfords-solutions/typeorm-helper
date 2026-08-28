@@ -1,6 +1,6 @@
 import { getMetadataArgsStorage, SelectQueryBuilder } from 'typeorm';
-import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
-import { EntityCollection } from '../collections/entity.collection';
+import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata.js';
+import { EntityCollection } from '../collections/entity.collection.js';
 
 export function RelationCondition(
     query: (query: SelectQueryBuilder<any>, entities: any[]) => void,

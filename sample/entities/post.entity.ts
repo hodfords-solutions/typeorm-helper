@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
-import { CategoryEntity } from './category.entity';
-import { PostCategoryEntity } from './post-category.entity';
-import { UserEntity } from './user.entity';
+import { CategoryEntity } from './category.entity.js';
+import { PostCategoryEntity } from './post-category.entity.js';
+import { UserEntity } from './user.entity.js';
 import { BaseEntity } from '@hodfords/typeorm-helper';
 
 @Entity('Post')

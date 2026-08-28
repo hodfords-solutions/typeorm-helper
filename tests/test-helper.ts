@@ -1,13 +1,13 @@
-import { UserEntity } from '../sample/entities/user.entity';
+import { UserEntity } from '../sample/entities/user.entity.js';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { PostEntity } from '../sample/entities/post.entity';
-import { CategoryEntity } from '../sample/entities/category.entity';
-import { PostCategoryEntity } from '../sample/entities/post-category.entity';
+import { PostEntity } from '../sample/entities/post.entity.js';
+import { CategoryEntity } from '../sample/entities/category.entity.js';
+import { PostCategoryEntity } from '../sample/entities/post-category.entity.js';
 import { setDataSource } from '@hodfords/typeorm-helper';
 import { randomInt } from 'crypto';
-import { PostRepository } from '../sample/repositories/post.repository';
-import { CategoryRepository } from '../sample/repositories/category.repository';
-import { UserRepository } from '../sample/repositories/user.repository';
+import { PostRepository } from '../sample/repositories/post.repository.js';
+import { CategoryRepository } from '../sample/repositories/category.repository.js';
+import { UserRepository } from '../sample/repositories/user.repository.js';
 
 export async function initializeTest(): Promise<void> {
     const options: DataSourceOptions = {

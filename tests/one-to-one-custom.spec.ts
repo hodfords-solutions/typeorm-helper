@@ -1,7 +1,8 @@
-import { UserRepository } from '../sample/repositories/user.repository';
-import { PostEntity } from '../sample/entities/post.entity';
-import { initializeTest } from './test-helper';
-import { PostRepository } from '../sample/repositories/post.repository';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { UserRepository } from '../sample/repositories/user.repository.js';
+import { PostEntity } from '../sample/entities/post.entity.js';
+import { initializeTest } from './test-helper.js';
+import { PostRepository } from '../sample/repositories/post.repository.js';
 import { IsNull, Not } from 'typeorm';
 
 describe('One-To-One Relation Test Cases', () => {

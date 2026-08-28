@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import { EntityMetadataBuilder } from 'typeorm/metadata-builder/EntityMetadataBuilder';
-import { RelationConditionInterface } from '../interfaces/relation-condition.interface';
+import { EntityMetadataBuilder } from 'typeorm/metadata-builder/EntityMetadataBuilder.js';
+import { RelationConditionInterface } from '../interfaces/relation-condition.interface.js';
 
-declare module 'typeorm/metadata-args/MetadataArgsStorage' {
+declare module 'typeorm/metadata-args/MetadataArgsStorage.js' {
     interface MetadataArgsStorage {
         relationConditions: RelationConditionInterface[];
     }

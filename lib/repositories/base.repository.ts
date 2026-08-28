@@ -11,13 +11,13 @@ import {
     SelectQueryBuilder,
     UpdateResult
 } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { EntityCollection } from '../collections/entity.collection';
-import { PaginationCollection } from '../collections/pagination.collection';
-import { getDataSource } from '../containers/data-source-container';
-import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator';
-import { BaseQuery } from '../queries/base.query';
-import { PaginationOptions } from '../types/pagination-options.type';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
+import { EntityCollection } from '../collections/entity.collection.js';
+import { PaginationCollection } from '../collections/pagination.collection.js';
+import { getDataSource } from '../containers/data-source-container.js';
+import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator.js';
+import { BaseQuery } from '../queries/base.query.js';
+import { PaginationOptions } from '../types/pagination-options.type.js';
 
 export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
     async runOnMaster<T>(callback: (manager: EntityManager) => Promise<T>): Promise<T> {

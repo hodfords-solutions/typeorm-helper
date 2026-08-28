@@ -1,7 +1,8 @@
-import { PostRepository } from '../sample/repositories/post.repository';
-import { PostOfUserQuery } from '../sample/queries/post-of-user.query';
-import { initializeTest } from './test-helper';
-import { UserRepository } from '../sample/repositories/user.repository';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { PostRepository } from '../sample/repositories/post.repository.js';
+import { PostOfUserQuery } from '../sample/queries/post-of-user.query.js';
+import { initializeTest } from './test-helper.js';
+import { UserRepository } from '../sample/repositories/user.repository.js';
 import { IsNull, Not } from 'typeorm';
 
 describe('Query Builder Test Cases', () => {

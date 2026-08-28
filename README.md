@@ -12,6 +12,18 @@ Install the `typeorm-helper` package with:
 npm install @hodfords/typeorm-helper --save
 ```
 
+### Requirements
+
+- This package is **ESM-only**. Use `import` syntax; `require()` is not supported.
+- Node.js `>=20.19.0` (or `>=22.12`, `>=24.15`, `>=26`).
+
+### Compatibility
+
+| `@hodfords/typeorm-helper` | NestJS | TypeORM |
+| -------------------------- | ------ | ------- |
+| `12.x`                     | `12.x` | `1.x`   |
+| `11.x`                     | `11.x` | `0.3.x` |
+
 ## Usage 🚀
 
 ### Defining custom repositories and entities
@@ -50,6 +62,31 @@ import { CustomRepository, BaseRepository } from '@hodfords/typeorm-helper';
 @CustomRepository(CategoryEntity)
 export class CategoryRepository extends BaseRepository<CategoryEntity> {}
 ```
+
+#### Registering repositories with Nest
+
+`TypeOrmHelperModule.forCustomRepository()` turns each custom repository into an injectable
+provider and registers its entity with the data source:
+
+```typescript
+@Module({
+    imports: [
+        TypeOrmHelperModule.forRoot({
+            // ...connection options
+            autoLoadEntities: true
+        }),
+        TypeOrmHelperModule.forCustomRepository([CategoryRepository])
+    ]
+})
+export class AppModule {}
+```
+
+> **`autoLoadEntities: true` is required** for the entity registration to take effect —
+> `@nestjs/typeorm` only merges entities registered this way into the data source when the
+> flag is set. Without it, list the entities in `entities` yourself.
+
+A runnable example lives in [`sample/tag.module.ts`](sample/tag.module.ts), covered by
+`tests/typeorm-module.spec.ts`.
 
 ### Lazy Relations
 

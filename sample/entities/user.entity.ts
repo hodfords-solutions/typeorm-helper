@@ -9,8 +9,8 @@ import {
     SelectQueryBuilder,
     ValueTransformer
 } from 'typeorm';
-import { PostEntity } from './post.entity';
-import { isNumber } from 'lodash';
+import { PostEntity } from './post.entity.js';
+import { isNumber } from 'es-toolkit';
 
 class TimestampTransformer implements ValueTransformer {
     to(value: any): Date | number {

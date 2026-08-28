@@ -1,5 +1,5 @@
 import { Brackets, WhereExpressionBuilder } from 'typeorm';
-import { WhereExpressionInterface } from '../interfaces/where-expression.interface';
+import { WhereExpressionInterface } from '../interfaces/where-expression.interface.js';
 
 export abstract class BaseWhereExpression extends Brackets implements WhereExpressionInterface {
     public constructor() {

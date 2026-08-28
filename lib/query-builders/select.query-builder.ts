@@ -1,7 +1,7 @@
 import { SelectQueryBuilder } from 'typeorm';
-import { EntityCollection } from '../collections/entity.collection';
+import { EntityCollection } from '../collections/entity.collection.js';
 
-declare module 'typeorm/query-builder/SelectQueryBuilder' {
+declare module 'typeorm/query-builder/SelectQueryBuilder.js' {
     interface SelectQueryBuilder<Entity> {
         getMany(): Promise<EntityCollection<Entity>>;
 

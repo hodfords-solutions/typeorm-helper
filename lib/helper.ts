@@ -1,10 +1,10 @@
-import { RelationQueryBuilder } from './query-builders/relation.query-builder';
+import { RelationQueryBuilder } from './query-builders/relation.query-builder.js';
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
-import { WhereExpressionInterface } from './interfaces/where-expression.interface';
-import { CollectionWhereExpression } from './where-expression/collection.where-expression';
-import { QueryInterface } from './interfaces/query.interface';
-import { CollectionQuery } from './queries/collection.query';
-import { getChildEntitiesAndRelationName, getEntities, groupRelationName } from './helpers/relation.helper';
+import { WhereExpressionInterface } from './interfaces/where-expression.interface.js';
+import { CollectionWhereExpression } from './where-expression/collection.where-expression.js';
+import { QueryInterface } from './interfaces/query.interface.js';
+import { CollectionQuery } from './queries/collection.query.js';
+import { getChildEntitiesAndRelationName, getEntities, groupRelationName } from './helpers/relation.helper.js';
 
 export type RelationParams =
     | string

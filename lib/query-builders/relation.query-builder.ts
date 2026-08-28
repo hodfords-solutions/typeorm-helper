@@ -1,8 +1,8 @@
-import { getDataSource } from '../containers/data-source-container';
-import { uniq } from 'lodash';
+import { getDataSource } from '../containers/data-source-container.js';
+import { uniq } from 'es-toolkit';
 import { Brackets, DataSource, ObjectLiteral, QueryRunner, SelectQueryBuilder } from 'typeorm';
-import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
-import { RelationConditionInterface } from '../interfaces/relation-condition.interface';
+import { RelationMetadata } from 'typeorm/metadata/RelationMetadata.js';
+import { RelationConditionInterface } from '../interfaces/relation-condition.interface.js';
 
 export class RelationQueryBuilder {
     public relation: RelationMetadata;

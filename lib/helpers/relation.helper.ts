@@ -1,5 +1,6 @@
-import { concat, get, groupBy, last, orderBy } from 'lodash';
-import { RelationParams } from '../helper';
+import { groupBy, last, orderBy } from 'es-toolkit';
+import { concat, get } from 'es-toolkit/compat';
+import { RelationParams } from '../helper.js';
 import { SelectQueryBuilder } from 'typeorm';
 
 export type RelationGroupType = {
@@ -67,5 +68,5 @@ export function groupRelationName(relationNames: RelationParams): Record<string,
             });
         }
     }
-    return groupBy(orderBy(relations, 'level'), 'level');
+    return groupBy(orderBy(relations, [(relation) => relation.level], ['asc']), (relation) => relation.level);
 }
