@@ -63,6 +63,31 @@ import { CustomRepository, BaseRepository } from '@hodfords/typeorm-helper';
 export class CategoryRepository extends BaseRepository<CategoryEntity> {}
 ```
 
+#### Registering repositories with Nest
+
+`TypeOrmHelperModule.forCustomRepository()` turns each custom repository into an injectable
+provider and registers its entity with the data source:
+
+```typescript
+@Module({
+    imports: [
+        TypeOrmHelperModule.forRoot({
+            // ...connection options
+            autoLoadEntities: true
+        }),
+        TypeOrmHelperModule.forCustomRepository([CategoryRepository])
+    ]
+})
+export class AppModule {}
+```
+
+> **`autoLoadEntities: true` is required** for the entity registration to take effect —
+> `@nestjs/typeorm` only merges entities registered this way into the data source when the
+> flag is set. Without it, list the entities in `entities` yourself.
+
+A runnable example lives in [`sample/tag.module.ts`](sample/tag.module.ts), covered by
+`tests/typeorm-module.spec.ts`.
+
 ### Lazy Relations
 
 Lazy relations allow you to load related entities only when they are needed. This can significantly improve performance by preventing the fetching of unnecessary data upfront.

@@ -1,6 +1,5 @@
 import { DynamicModule, Provider } from '@nestjs/common';
 import { getDataSourceToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { EntitiesMetadataStorage } from '@nestjs/typeorm/dist/entities-metadata.storage.js';
 import { DataSource } from 'typeorm';
 import { DEFAULT_DATA_SOURCE_NAME } from '../constants/type.constant.js';
 import { setDataSource } from '../containers/data-source-container.js';
@@ -22,8 +21,8 @@ export class TypeOrmHelperModule {
 
     public static forCustomRepository<T extends new (...args: any[]) => any>(repositories: T[]): DynamicModule {
         const providers: Provider[] = [];
+        const entities: Parameters<typeof TypeOrmModule.forFeature>[0] = [];
 
-        EntitiesMetadataStorage.addEntitiesByDataSource(DEFAULT_DATA_SOURCE_NAME, [...repositories]);
         for (const repository of repositories) {
             const entity = Reflect.getMetadata(TYPEORM_EX_CUSTOM_REPOSITORY, repository);
 
@@ -31,6 +30,7 @@ export class TypeOrmHelperModule {
                 continue;
             }
 
+            entities.push(entity);
             providers.push({
                 inject: [getDataSourceToken()],
                 provide: repository,
@@ -43,6 +43,10 @@ export class TypeOrmHelperModule {
 
         return {
             exports: providers,
+            // Registers each repository's entity with the data source. Previously this reached into
+            // `EntitiesMetadataStorage`, which @nestjs/typeorm v12 no longer exposes; `forFeature` is
+            // the public API that writes to that same storage.
+            imports: [TypeOrmModule.forFeature(entities, DEFAULT_DATA_SOURCE_NAME)],
             module: TypeOrmHelperModule,
             providers
         };
