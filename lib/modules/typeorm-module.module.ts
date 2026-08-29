@@ -12,7 +12,7 @@ export class TypeOrmHelperModule {
                 return config;
             },
             dataSourceFactory: async (options) => {
-                const dataSource = new DataSource(options);
+                const dataSource = new DataSource(options!);
                 setDataSource(dataSource);
                 return dataSource;
             }

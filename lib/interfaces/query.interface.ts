@@ -5,5 +5,5 @@ export interface QueryInterface<Entity extends ObjectLiteral> {
 
     order?(query: SelectQueryBuilder<Entity>): void;
 
-    alias?(): string;
+    alias?(): string | undefined;
 }

@@ -11,7 +11,7 @@ export type RelationParams =
     | string[]
     | (string | { [key: string]: (name: SelectQueryBuilder<any>) => void })[];
 
-export async function loadRelations(entities, relationNames: RelationParams, columns?: string[]) {
+export async function loadRelations(entities: any, relationNames: RelationParams, columns?: string[]): Promise<void> {
     if (!entities) {
         return;
     }
@@ -33,7 +33,12 @@ export async function loadRelations(entities, relationNames: RelationParams, col
     }
 }
 
-async function loadRelation(entities, relationName: string, columns?: string[], customQuery = null) {
+async function loadRelation(
+    entities: any,
+    relationName: string,
+    columns?: string[],
+    customQuery: ((query: SelectQueryBuilder<any>) => void) | null = null
+): Promise<void> {
     entities = getEntities(entities);
     if (relationName.includes('.')) {
         const childEntity = getChildEntitiesAndRelationName(entities, relationName);
@@ -49,8 +54,9 @@ async function loadRelation(entities, relationName: string, columns?: string[], 
     }
     if (columns?.length) {
         columns = columns.map((column) => (column.includes('.') ? column : `${relationName}.${column}`));
+        const selectedColumns = columns;
         relationQueryBuilder.addCustomQuery((query: SelectQueryBuilder<any>) => {
-            query.select(columns);
+            query.select(selectedColumns);
         });
     }
     await relationQueryBuilder.load();

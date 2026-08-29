@@ -15,6 +15,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { EntityCollection } from '../collections/entity.collection.js';
 import { PaginationCollection } from '../collections/pagination.collection.js';
 import { getDataSource } from '../containers/data-source-container.js';
+import { DEFAULT_PER_PAGE } from '../constants/type.constant.js';
 import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator.js';
 import { BaseQuery } from '../queries/base.query.js';
 import { PaginationOptions } from '../types/pagination-options.type.js';
@@ -31,7 +32,8 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
 
     static make<T>(this: new (...args: any[]) => T): T {
         const entity = Reflect.getMetadata(TYPEORM_EX_CUSTOM_REPOSITORY, this);
-        const baseRepository = getDataSource().getRepository(entity);
+        // `make()` is only reachable once TypeOrmHelperModule has registered the data source.
+        const baseRepository = getDataSource()!.getRepository(entity);
         return new this(baseRepository.target, baseRepository.manager, baseRepository.queryRunner);
     }
 
@@ -59,7 +61,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
 
     async findByIds(ids: (string | number)[], options?: FindManyOptions<Entity>): Promise<EntityCollection<Entity>> {
         if (!ids || ids.length === 0) {
-            return [] as EntityCollection<Entity>;
+            return new EntityCollection<Entity>();
         }
         return super.find({
             where: { id: In(ids) } as any,
@@ -84,7 +86,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         }
 
         const query: ObjectLiteral = options.where ? options : { where: options };
-        const { page = 1, perPage } = paginationOptions;
+        const { page = 1, perPage = DEFAULT_PER_PAGE } = paginationOptions;
         const [itemCount, items] = await Promise.all([
             super.count(options),
             super.find({
@@ -107,7 +109,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         query: SelectQueryBuilder<Entity>,
         options: PaginationOptions
     ): Promise<PaginationCollection<Entity>> {
-        const { page = 1, perPage } = options;
+        const { page = 1, perPage = DEFAULT_PER_PAGE } = options;
         const [items, itemCount] = await query
             .take(perPage)
             .skip((page - 1) * perPage)
@@ -117,7 +119,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
             total: itemCount,
             lastPage: Math.ceil(itemCount / perPage),
             perPage: perPage,
-            currentPage: options.page
+            currentPage: page
         });
     }
 

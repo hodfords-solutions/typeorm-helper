@@ -1,6 +1,6 @@
 {
     "name": "@hodfords/typeorm-helper",
-    "version": "12.0.0",
+    "version": "12.1.0",
     "description": "Simplifies TypeORM usage in NestJS apps",
     "license": "MIT",
     "readmeFilename": "README.md",
@@ -63,12 +63,12 @@
         "reflect-metadata": "0.2.2",
         "rimraf": "6.1.2",
         "typeorm": "1.1.0",
-        "typescript": "5.9.3",
+        "typescript": "6.0.3",
         "unplugin-swc": "^1.5.7",
         "vitest": "^4.1.10"
     },
     "scripts": {
-        "prebuild": "rimraf dist",
+        "prebuild": "rimraf dist *.tsbuildinfo",
         "build": "tsc -p tsconfig.build.json",
         "postbuild": "cp package.json dist && cp README.md dist && cp .npmrc dist",
         "deploy": "npm run build && npm publish dist",
