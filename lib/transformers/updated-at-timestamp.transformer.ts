@@ -5,10 +5,10 @@ export class UpdatedAtTimestampTransformer implements ValueTransformer {
         return () => 'now()';
     }
 
-    from(value) {
+    from(value: unknown) {
         if (!value) {
             return value;
         }
-        return Math.round(+new Date(value) / 1000);
+        return Math.round(+new Date(value as string | number | Date) / 1000);
     }
 }

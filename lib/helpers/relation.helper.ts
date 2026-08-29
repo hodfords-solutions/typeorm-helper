@@ -13,8 +13,8 @@ export function getEntities<T>(entities: T | T[]): T[] {
     return Array.isArray(entities) ? entities : [entities];
 }
 
-export function getEntitiesByPaths(entities: any[], relationPaths: string[], index: number = 0) {
-    let childEntities = [];
+export function getEntitiesByPaths(entities: any[], relationPaths: string[], index: number = 0): any[] {
+    let childEntities: any[] = [];
     for (const entity of entities) {
         const childEntity = get(entity, relationPaths[index]);
         if (!childEntity) {
@@ -37,7 +37,7 @@ export function getEntitiesByPaths(entities: any[], relationPaths: string[], ind
 export function getChildEntitiesAndRelationName(entities: any[], relationName: string) {
     const relationPaths = relationName.split('.');
     const childEntities = getEntitiesByPaths(entities, relationPaths.slice(0, -1));
-    let newEntities = [];
+    let newEntities: any[] = [];
     for (const entity of childEntities) {
         if (Array.isArray(entity)) {
             newEntities = concat(newEntities, ...entity);
@@ -47,7 +47,7 @@ export function getChildEntitiesAndRelationName(entities: any[], relationName: s
     }
     return {
         entities: newEntities,
-        relationName: last(relationPaths)
+        relationName: last(relationPaths) as string
     };
 }
 

@@ -2,7 +2,7 @@ import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { QueryInterface } from '../interfaces/query.interface.js';
 
 export abstract class BaseQuery<Entity extends ObjectLiteral> implements QueryInterface<Entity> {
-    alias(): string {
+    alias(): string | undefined {
         return undefined;
     }
 

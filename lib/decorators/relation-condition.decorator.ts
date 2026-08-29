@@ -4,9 +4,9 @@ import { EntityCollection } from '../collections/entity.collection.js';
 
 export function RelationCondition(
     query: (query: SelectQueryBuilder<any>, entities: any[]) => void,
-    map?: (entity, result, column: ColumnMetadata) => boolean
+    map?: (entity: any, result: any, column: ColumnMetadata) => boolean
 ): PropertyDecorator {
-    return function (object: object, propertyName: string) {
+    return function (object: object, propertyName: string | symbol) {
         const type = Reflect.getMetadata('design:type', object, propertyName);
         const metadataArgsStorage = getMetadataArgsStorage();
         if (!metadataArgsStorage.relationConditions) {
@@ -14,7 +14,7 @@ export function RelationCondition(
         }
         metadataArgsStorage.relationConditions.push({
             target: object.constructor,
-            propertyName: propertyName,
+            propertyName: propertyName as string,
             options: { query, map },
             isArray: type === Array || type === EntityCollection
         });

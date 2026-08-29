@@ -8,6 +8,6 @@ export interface RelationConditionInterface {
     isArray: boolean;
     options: {
         query?: (query: SelectQueryBuilder<any>, entities: any[]) => void;
-        map?: (entity, result, column: ColumnMetadata) => boolean;
+        map?: (entity: any, result: any, column: ColumnMetadata) => boolean;
     };
 }

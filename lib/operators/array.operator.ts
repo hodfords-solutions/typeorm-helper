@@ -1,10 +1,10 @@
 import { randomBytes } from 'crypto';
 import { FindOperator, Raw } from 'typeorm';
 
-function arrayFindRaw(value, operator: string, type: string) {
+function arrayFindRaw(value: unknown, operator: string, type: string) {
     const param = `rawArrayParam${randomBytes(16).toString('hex')}`;
     const arrayValue = Array.isArray(value) ? value : [value];
-    return Raw((column) => ` ${column} ${operator} ARRAY[:...${param}]::${type}[]  `, { [param]: arrayValue });
+    return Raw((column: string) => ` ${column} ${operator} ARRAY[:...${param}]::${type}[]  `, { [param]: arrayValue });
 }
 
 export function ArrayContains<T>(value: T | FindOperator<T>, type: string) {
