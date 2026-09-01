@@ -7,9 +7,7 @@ import { CollectionQuery } from './queries/collection.query.js';
 import { getChildEntitiesAndRelationName, getEntities, groupRelationName } from './helpers/relation.helper.js';
 
 export type RelationParams =
-    | string
-    | string[]
-    | (string | { [key: string]: (name: SelectQueryBuilder<any>) => void })[];
+    string | string[] | (string | { [key: string]: (name: SelectQueryBuilder<any>) => void })[];
 
 export async function loadRelations(entities: any, relationNames: RelationParams, columns?: string[]): Promise<void> {
     if (!entities) {

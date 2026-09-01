@@ -16,5 +16,5 @@
         "postbuild"
     ],
     "flagWords": ["hte"],
-    "ignorePaths": ["node_modules", "test", "*.spec.ts", "cspell.json"]
+    "ignorePaths": ["node_modules", "test", "*.spec.ts", "cspell.json", "package-lock.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"]
 }
